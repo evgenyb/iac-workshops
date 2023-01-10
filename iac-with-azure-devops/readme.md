@@ -1,8 +1,6 @@
-# Infrastructure as Code workshops
+# Workshop - Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps
 
-This repository contains a series of hands-on workshops covering different aspects of working with Infrastructure as Code on Azure.
-
-## [Workshop - Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps](iac-with-azure-devops/readme.md)
+![logo](images/logo.jpg)
 
 This is an introduction level workshop that covers different aspects of automating infrastructure provisioning on Azure with DevOps and you will learn:
 
@@ -13,4 +11,16 @@ This is an introduction level workshop that covers different aspects of automati
 * How to create Azure DevOps IaC deployment pipeline using `az devops` cli
 * What strategies are available to implement IaC for multi-environment workloads
 
- This workshops is a combination of theoretical blocks with slides and labs. Estimated time of completion is between 3 and 4 hours.
+
+## Agenda
+ 
+[...WIP...]
+ 
+## Links
+
+* [Prerequisites](prerequisites.md)
+
+
+## Feedback
+
+* Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/1) to comment on this workshop. 
