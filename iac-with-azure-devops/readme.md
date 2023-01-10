@@ -1,4 +1,4 @@
-# Workshop - Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps
+# Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps
 
 ![logo](images/logo.jpg)
 
