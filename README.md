@@ -2,7 +2,7 @@
 
 This repository contains a series of hands-on workshops covering different aspects of working with Infrastructure as Code on Azure.
 
-## [Workshop - Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps](iac-with-azure-devops/readme.md)
+## [Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps](iac-with-azure-devops/readme.md)
 
 This is an introduction level workshop that covers different aspects of automating infrastructure provisioning on Azure with DevOps and you will learn:
 
