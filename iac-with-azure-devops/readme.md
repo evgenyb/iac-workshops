@@ -5,6 +5,7 @@
 This is an introduction level workshop that covers different aspects of automating infrastructure provisioning on Azure with DevOps and you will learn:
 
 * What is Azure Service Principal, how to create it and how to properly scope it's RBAC permissions for your workload
+* How to use Azure DevOps REST APIs to automate Azure DevOps operations
 * How to use `az devops` extension to automate Azure DevOps operations 
 * How to create Azure DevOps Service Connection for workload Service Principal with `az devops` cli
 * How to create IaC git Repository in Azure DevOps based on your Template repository
