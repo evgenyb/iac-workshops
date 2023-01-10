@@ -15,7 +15,7 @@ This is an introduction level workshop that covers different aspects of automati
 
 ## Agenda
  
-[...WIP...]
+WIP. Will be available soon.
  
 ## Links
 
