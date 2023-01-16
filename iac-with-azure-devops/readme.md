@@ -15,7 +15,19 @@ This is an introduction level workshop that covers different aspects of automati
 
 ## Agenda
  
-WIP. Will be available soon.
+ * Welcome + practical information
+ * Automate infrastructure provisioning with Azure DevOps
+ * [Lab-01](labs/lab-01/readme.md) - provision workshop resources and get familiar with IaC code
+ * Lab-02 - working with Azure Service Principal
+ * Lab-03 - working with Azure DevOps Service Connections
+ * Lab-04 - use Azure DevOps REST APIs to automate Azure DevOps operations
+ * Lab-05 - use `az devops` extension to automate Azure DevOps operations 
+ * Lab-06 - create ADO Azure Service Connection using `az devops`
+ * Lab-07 - create ADO Repository using `az devops`
+ * Lab-08 - create ADO release pipeline
+ * Lab-09 - putting it all together, create master script that does everything
+ * [Lab-10](labs/lab-08/readme.md) - cleaning up resources
+
  
 ## Links
 
