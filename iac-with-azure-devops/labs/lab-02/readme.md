@@ -2,15 +2,16 @@
 
 ## Goals
 
-When you have applications, hosted services, or automated tools that need to access or modify Azure resources, you need to create an identity for the app. This identity is known as a `Service Principal`. Access to resources is restricted by the roles assigned to the `Service Principal`, giving you control over which resources can be accessed and at which level. 
+Automated tools that use Azure services should always have restricted permissions. Instead of having applications sign in as a fully privileged user, Azure offers `Service principals`.
 
 In this lab you will learn:
 
 * how to create new Service Principal in the Azure Portal
 * how to create new Service Principal with `az cli`
-* how to store Service Principal credentials to the Key Vault for further re-use
 * how to reset Service Principal credentials
+* how to store Service Principal credentials to the Key Vault for further re-use
 * how to manage service principal roles
+* how to delete service principal
 
 ## Permissions required
 
@@ -61,7 +62,7 @@ After saving the client secret, the value of the client secret is displayed. You
 
 ![images1-2](images/task1-7.jpg)
 
-### Find Service Principal
+### Find Service Principal at the Portal
 
 As we learned earlier, there are now two objects in Azure AD now:
 
@@ -78,9 +79,190 @@ Then click at `Managed application in local directory` link. You will be redirec
 
 As you can see, the `Application ID` are the same, because both `Application object` and `Service Principal object` represent the same application, but `Object ID` are different, because these are two different objects in Azure AD.
 
-
-
 ![images1-2](images/task1-8.jpg)
+
+## Task #2 - create an Azure service principal with the Azure CLI
+
+Use [az ad sp create-for-rbac](https://learn.microsoft.com/en-us/cli/azure/ad/sp?WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest#az-ad-sp-create-for-rbac) command to create an `Service principal`.
+
+```powershell
+# Create Azure Service principal
+az ad sp create-for-rbac -n iac-lab1-task2-spn
+{
+  "appId": "00000000-0000-0000-0000-000000000000",
+  "displayName": "iac-lab1-task2-spn",
+  "password": "...",
+  "tenant": "00000000-0000-0000-0000-000000000000"
+}
+```
+
+When you create an `Service principal` using the `az ad sp create-for-rbac` command, the output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. 
+
+### Find Service Principal at the Portal
+
+Navigate to `Azure Active Directory -> Enterprise registrations` enter app name (`iac-lab1-task2-spn`) into the search field, set `Application type` filter to `All Application`.  You should see your `Service Principal`. 
+
+![images1-2](images/task2-1.jpg)
+
+
+Or, you can find `iac-lab1-task2-spn` application under `Application registrations` and then select `Managed application in local directory` link from the Overview page.
+
+### Find Service Principal with `az cli`
+
+Quite often it's faster to get spn information using `az cli` (or PowerShell, but I am not covering it in this lab).
+
+```powershell
+# Get Service Principal  by id
+az ad sp show --id 95c96f7c-17e6-4b7f-9c1c-4f69f5b5e734
+```
+
+But in most of the cases, you want ot get id by Service Principal name. In this case, you can use `--filter` flag.
+
+```powershell
+# Get spn info by display name 
+az ad sp list --filter "displayName eq 'iac-lab1-task2-spn'"
+
+# Get spn id by spn name
+az ad sp list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0].id -otsv
+```
+
+## Task #3 - reset Service Principal password
+
+Sometimes you need to reset the Service Principal password. In that case, use [az ad sp credential reset](https://learn.microsoft.com/en-us/cli/azure/ad/sp/credential??WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest#az-ad-sp-credential-reset) command.
+
+```powershell
+# Get spn id by name
+$spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0].id -otsv)
+
+# Reset spn credentials
+az ad sp credential reset --id $spnId
+{
+  "appId": "00000000-0000-0000-0000-000000000000",
+  "password": "...",
+  "tenant": "00000000-0000-0000-0000-000000000000"
+}
+```
+
+## Task #4 - store Service Principal credentials to the Azure Key Vault
+
+A common use-case is when you need to store newly created or renewed Service principal credentials for further use into Azure KeyVault. As we already learned, when new SPN is created, its `appId`, `password` and `tenant` are return as an output in json format. We can then use `ConvertFrom-Json` powershell command to store it into PowerShell Json object.
+
+
+```powershell
+# Store $spnName name into $spnName variable
+$spnName = 'iac-lab1-task4-spn'
+
+# Create new Service Principal and store its output into $spnMetadata variable as a Json
+$spnMetadata = (az ad sp create-for-rbac -n $spnName --only-show-errors -o json | ConvertFrom-Json)
+
+# Show appId
+$spnMetadata.appId
+
+# Show password
+$spnMetadata.password
+
+# Show tenant id
+$spnMetadata.tenant
+```
+
+Now, store `appID`, `password` and `tenant` into Azure Key Vault we created at `lab-01`.
+
+```powershell
+# Store KeyVault name into $spnMetadataKeyvaultName variable
+$spnMetadataKeyvaultName = '<Azure Key Vault Name you used at lab-01>'
+
+# Store SPN appId into $spnName-client-id secret
+az keyvault secret set -n "$spnName-client-id" --value $spnMetadata.appId --vault-name $spnMetadataKeyvaultName -o none
+
+# Store SPN password into $spnName-password secret
+az keyvault secret set -n "$spnName-secret" --value $spnMetadata.password --vault-name $spnMetadataKeyvaultName -o none
+
+# Store SPN tenant id into $spnName-tenant secret
+az keyvault secret set -n "$spnName-tenant-id" --value $spnMetadata.tenant --vault-name $spnMetadataKeyvaultName -o none
+
+# Show all secret 
+az keyvault secret list --vault-name $spnMetadataKeyvaultName --query [].name
+[
+  "iac-lab1-task4-spn-client-id",
+  "iac-lab1-task4-spn-secret",
+  "iac-lab1-task4-spn-tenant-id"
+]
+
+# Get spn app id 
+az keyvault secret show -n "$spnName-client-id" --vault-name $spnMetadataKeyvaultName --query value -otsv
+
+# Get spn password from Key Vault
+az keyvault secret show -n "$spnName-secret" --vault-name $spnMetadataKeyvaultName --query value -otsv
+
+# Get spn tenant from Key Vault
+az keyvault secret show -n "$spnName-tenant-id" --vault-name $spnMetadataKeyvaultName --query value -otsv
+```
+
+Note, you can use the same technique to store renewed credentials into Key Vault.
+
+```powershell
+$spnId=(az ad sp list --filter "displayName eq '$spnName'" --query [0].id -otsv)
+
+# Reset credentials and store its output into $spnMetadata variable as Json
+$spnMetadata = (az ad sp credential reset --id $spnId --only-show-errors -o json | ConvertFrom-Json)
+
+# Store SPN appId into $spnName-client-id secret
+az keyvault secret set -n "$spnName-client-id" --value $spnMetadata.appId --vault-name $spnMetadataKeyvaultName -o none
+
+# Store SPN password into $spnName-password secret
+az keyvault secret set -n "$spnName-secret" --value $spnMetadata.password --vault-name $spnMetadataKeyvaultName -o none
+
+# Store SPN tenant id into $spnName-tenant secret
+az keyvault secret set -n "$spnName-tenant-id" --value $spnMetadata.tenant --vault-name $spnMetadataKeyvaultName -o none
+
+# Get spn app id 
+az keyvault secret show -n "$spnName-client-id" --vault-name $spnMetadataKeyvaultName --query value -otsv
+
+# Get spn password from Key Vault
+az keyvault secret show -n "$spnName-secret" --vault-name $spnMetadataKeyvaultName --query value -otsv
+
+# Get spn tenant from Key Vault
+az keyvault secret show -n "$spnName-tenant-id" --vault-name $spnMetadataKeyvaultName --query value -otsv
+```
+
+## Task #4 - 
+
+## Task #5 - delete service principal
+
+Now, let's cleanup and remove all Service principals we created at this lab.
+
+```powershell
+# Get iac-lab1-task2-spn Service Principal ip
+$spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0].id -otsv)
+
+# Delete SPN
+az ad sp delete --id $spnId
+
+# Get app registration id  for iac-lab1-task2-spn app
+$appId=(az ad app list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0].id -otsv)
+
+# Delete App Registration
+az ad app delete --id $appId
+
+# Get iac-lab1-task4-spn Service Principal id
+$spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task4-spn'" --query [0].id -otsv)
+
+# Delete SPN
+az ad sp delete --id $spnId
+
+# Get app registration id  for iac-lab1-task4-spn app
+$appId=(az ad app list --filter "displayName eq 'iac-lab1-task4-spn'" --query [0].id -otsv)
+
+# Delete App Registration
+az ad app delete --id $appId
+```
+
+Note, it might take several minutes to delete SPNs.
+
+To delete `iac-spn` Service Principal, navigate to `Azure Active Directory -> Application registration`, find `iac-spn` app registration and delete it.
+
+![images5-1](images/task5-1.jpg)
+
 
 ## Useful links
 
@@ -88,3 +270,5 @@ As you can see, the `Application ID` are the same, because both `Application obj
 * [Common service connection types](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?WT.mc_id=AZ-MVP-5003837&view=azure-devops&tabs=yaml#common-service-connection-types)
 * [Application and service principal objects in Azure Active Directory](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals?WT.mc_id=AZ-MVP-5003837)
 * [Azure AD built-in roles](https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference?WT.mc_id=AZ-MVP-5003837#all-roles)
+
+[Go to lab-03](../lab-03/readme.md)
