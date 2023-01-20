@@ -110,14 +110,14 @@ Or, you can find `iac-lab1-task2-spn` application under `Application registratio
 
 ### Find Service Principal with `az cli`
 
-Quite often it's faster to get spn information using `az cli` (or PowerShell, but I am not covering it in this lab).
+Quite often it's faster to get spn information using `az cli` 
 
 ```powershell
 # Get Service Principal  by id
 az ad sp show --id 95c96f7c-17e6-4b7f-9c1c-4f69f5b5e734
 ```
 
-But in most of the cases, you want ot get id by Service Principal name. In this case, you can use `--filter` flag.
+Normally, you don't know/remember SPN' id, so it's easier to get the ID by using Service Principal name. In this case, you can use `--filter` flag.
 
 ```powershell
 # Get spn info by display name 
@@ -329,18 +329,6 @@ az ad sp delete --id $spnId
 
 # Get app registration id  for iac-lab1-task2-spn app
 $appId=(az ad app list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0].id -otsv)
-
-# Delete App Registration
-az ad app delete --id $appId
-
-# Get iac-lab1-task4-spn Service Principal id
-$spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task4-spn'" --query [0].id -otsv)
-
-# Delete SPN
-az ad sp delete --id $spnId
-
-# Get app registration id  for iac-lab1-task4-spn app
-$appId=(az ad app list --filter "displayName eq 'iac-lab1-task4-spn'" --query [0].id -otsv)
 
 # Delete App Registration
 az ad app delete --id $appId
