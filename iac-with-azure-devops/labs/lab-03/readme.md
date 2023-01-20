@@ -8,8 +8,6 @@ In this lab you will learn:
 * how to create new Azure Resource Manager service connection using `az devops` extension
 * how to create new Azure Resource Manager service connection using `Azure DevOps REST API` 
 
-## Prerequisites
-
 
 ## Task #1 - create new Azure Resource Manager service connection at Azure Devops portal
 
@@ -91,8 +89,78 @@ Then give the Service Connection a name and `Save` it
 
 ![image](images/task1-6.jpg)
 
+
+## Task #2 - create new Azure Resource Manager service connection with `az devops`
+
+### Install `az devops` extension 
+
+The Azure DevOps Extension for Azure CLI adds Pipelines, Boards, Repos, Artifacts and DevOps commands to the Azure CLI 2.0.
+
+Before you can start using `az devops` extension, make sure that your `az cli` is at least at version `v2.0.69`
+
+```powershell
+# Check az cli version
+az --version
+azure-cli                         2.43.0 *
+
+# Install az devops extension
+az extension add --name azure-devops
+```
+
+If your Azure DevOps organization is connected to Azure AD directory, then you don't need to authenticate towards Azure DevOps, else you need to generate [Azure DevOps Personal Access Token (PAT)](https://learn.microsoft.com/en-gb/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows#create-a-pat) and use it to login with `az devops login` command.
+
+```powershell
+# try to get Azure DevOps projects
+az devops project list
+Before you can run Azure DevOps commands, you need to run the login command(az login if using AAD/MSA identity else az devops login if using PAT token) to setup credentials.  Please see https://aka.ms/azure-devops-cli-auth for more information.
+
+# Login to 
+az devops login
+Token:
+
+# Get Azure DevOps projects
+az devops project list --query value[].name
+```
+
+###  Create Service connection
+
+To create `Azure Resource Manager service connection` we will use [az devops service-endpoint azurerm](https://learn.microsoft.com/en-us/cli/azure/devops/service-endpoint/azurerm?WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest) command. This command requires the following parameters:
+
+* azure-rm-service-principal-id
+* azure-rm-subscription-id
+* azure-rm-subscription-name
+* azure-rm-tenant-id
+
+and for automation, it requires to set service principal password/secret in `AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY` environment variable. 
+
+As you can see, it requires the same information we used when we created New Service Connection at the Azure DevOps portal, if you are working at the same PowerShell session, then these variables are still available and we can re-use them, if not, re-run PowerShell script we used at `Task #1`.
+
+
+```powershell
+# Set AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY environment variable
+$env:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY = $servicePrincipalKey
+
+az devops service-endpoint azurerm create `
+    --azure-rm-service-principal-id $servicePrincipalID `
+    --azure-rm-subscription-id $subscriptionID `
+    --azure-rm-subscription-name $subscriptionName `
+    --azure-rm-tenant-id $tenantId `
+    --name 'iac-lab2-task2-cs' `
+    --project 'iac' 
+
+# Get list of available service connections
+az devops service-endpoint list --project iac --query [].name
+[
+  "iac-lab2-task2-cs",
+  "iac-test-cs"
+]
+```
+
+
 ## Useful links
 
 * [Manage service connections](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?WT.mc_id=AZ-MVP-5003837&view=azure-devops&tabs=yaml)
 * [Common service connection types](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?WT.mc_id=AZ-MVP-5003837&view=azure-devops&tabs=yaml#common-service-connection-types)
 * [Azure Resource Manager service connection](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?WT.mc_id=AZ-MVP-5003837&view=azure-devops&tabs=yaml#azure-resource-manager-service-connection)
+* [az devops service-endpoint azurerm](https://learn.microsoft.com/en-us/cli/azure/devops/service-endpoint/azurerm?WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest)
+* [Create Azure DevOps Personal Access Token (PAT)](https://learn.microsoft.com/en-gb/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows#create-a-pat)
