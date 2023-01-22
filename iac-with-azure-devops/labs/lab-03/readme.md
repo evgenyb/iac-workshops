@@ -164,3 +164,5 @@ az devops service-endpoint list --project iac --query [].name
 * [Azure Resource Manager service connection](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?WT.mc_id=AZ-MVP-5003837&view=azure-devops&tabs=yaml#azure-resource-manager-service-connection)
 * [az devops service-endpoint azurerm](https://learn.microsoft.com/en-us/cli/azure/devops/service-endpoint/azurerm?WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest)
 * [Create Azure DevOps Personal Access Token (PAT)](https://learn.microsoft.com/en-gb/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows#create-a-pat)
+
+[Go to lab-04](../lab-04/readme.md)
