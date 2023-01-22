@@ -267,11 +267,12 @@ $spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task5-spn'" --query [0]
 
 # Remove role assignment
 az role assignment delete --assignee $spnId `
-                          --role Contributor `
+                          --role Reader `
                           --scope /subscriptions/$subscriptionID/resourceGroups/iac-ado-ws1-dev-rg
 
 # Get iac-lab1-task5-spn roles
 az role assignment list --assignee $spnId --all
+[]
 ```
 
 ## Task #6 - sign in using a Service Principal
@@ -308,15 +309,14 @@ az login --service-principal --username $appID --password $password --tenant $te
 # Show current account
 az account show
 
-# Logout 
+# Logout from Service Principal account 
 az logout
 
-# Login as your user
+# Login back as your user
 az login
 
 # Check that it's actually your account :)
 az account show
-
 ```
 
 ## Task #7 - delete Service Principal
@@ -336,6 +336,8 @@ $appId=(az ad app list --filter "displayName eq 'iac-lab1-task2-spn'" --query [0
 # Delete App Registration
 az ad app delete --id $appId
 ```
+
+Repeat the same commands and delete `iac-lab1-task5-spn` Service Principal.
 
 Note, it might take several minutes to delete SPNs.
 
