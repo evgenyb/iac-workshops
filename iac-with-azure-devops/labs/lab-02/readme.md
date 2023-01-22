@@ -151,7 +151,7 @@ A common use-case is when you need to store newly created or renewed Service pri
 
 ```powershell
 # Store $spnName name into $spnName variable
-$spnName = 'iac-lab1-task4-spn'
+$spnName = 'iac-ado-ws1-dev-iac-spn'
 
 # Create new Service Principal and store its output into $spnMetadata variable as a Json
 $spnMetadata = (az ad sp create-for-rbac -n $spnName --only-show-errors -o json | ConvertFrom-Json)
@@ -184,9 +184,9 @@ az keyvault secret set -n "$spnName-tenant-id" --value $spnMetadata.tenant --vau
 # Show all secret 
 az keyvault secret list --vault-name $spnMetadataKeyvaultName --query [].name
 [
-  "iac-lab1-task4-spn-client-id",
-  "iac-lab1-task4-spn-secret",
-  "iac-lab1-task4-spn-tenant-id"
+  "iac-ado-ws1-dev-iac-spn-client-id",
+  "iac-ado-ws1-dev-iac-spn-secret",
+  "iac-ado-ws1-dev-iac-spn-tenant-id"
 ]
 
 # Get spn app id 
@@ -234,8 +234,8 @@ You can assign role when you create new Service Principal
 # Get your active subscription id
 $subscriptionID = (az account show --query id -otsv)
 
-# Create new Service Principal and assign it with Reader role at the iac-devops-ws1-support-rg Resource group scope
-az ad sp create-for-rbac -n iac-lab1-task5-spn --role Reader --scope /subscriptions/$subscriptionID/resourceGroups/iac-devops-ws1-support-rg
+# Create new Service Principal and assign it with Reader role at the iac-ado-ws1-dev-rg Resource group scope
+az ad sp create-for-rbac -n iac-lab1-task5-spn --role Reader --scope /subscriptions/$subscriptionID/resourceGroups/iac-ado-ws1-dev-rg
 
 # Get iac-lab1-task5-spn appId
 $spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task5-spn'" --query [0].id -otsv)
@@ -244,46 +244,49 @@ $spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task5-spn'" --query [0]
 az role assignment list --assignee $spnId --all
 ```
 
-To assign role for already existing Service Principal (`iac-lab1-task5-spn`) use the following command:
+To assign role to `iac-ado-ws1-dev-iac-spn` use the following command:
 
 ```powershell
-# Assign Contributor role to iac-lab1-task5-spn Service Principal at iac-devops-ws1-support-rg Resource group scope
+# Get SPN ID
+$spnId=(az ad sp list --filter "displayName eq 'iac-ado-ws1-dev-iac-spn'" --query [0].id -otsv)
+
+# Assign Contributor role to iac-ado-ws1-dev-iac-spn Service Principal at iac-ado-ws1-dev-rg Resource group scope
 az role assignment create --assignee $spnId `
                           --role Contributor `
-                          --scope /subscriptions/$subscriptionID/resourceGroups/iac-devops-ws1-support-rg
+                          --scope /subscriptions/$subscriptionID/resourceGroups/iac-ado-ws1-dev-rg
 
-# Get all iac-lab1-task4-spn roles
+# Get all iac-ado-ws1-dev-iac-spn roles
 az role assignment list --assignee $spnId --all
 ```
-
-Last command should show two roles assigned to the `iac-lab1-task5-spn` Service Principal
 
 To delete role assignment, use the following command.
 
 ```powershell
+# Get iac-lab1-task5-spn appId
+$spnId=(az ad sp list --filter "displayName eq 'iac-lab1-task5-spn'" --query [0].id -otsv)
+
 # Remove role assignment
 az role assignment delete --assignee $spnId `
                           --role Contributor `
-                          --scope /subscriptions/$subscriptionID/resourceGroups/iac-devops-ws1-support-rg
+                          --scope /subscriptions/$subscriptionID/resourceGroups/iac-ado-ws1-dev-rg
 
-# Get all iac-lab1-task4-spn roles
+# Get iac-lab1-task5-spn roles
 az role assignment list --assignee $spnId --all
 ```
 
-
 ## Task #6 - sign in using a Service Principal
 
-Sometimes you need to test or debug script execution under specific Service Principal and that requires you to sign in with Service Principal Credentials. We already stored 'iac-lab1-task4-spn' Service Principal credentials into the Key Vault, so we can use them with the following command:
+Sometimes you need to test or debug script execution under specific Service Principal and that requires you to sign in with Service Principal Credentials. We already stored 'iac-ado-ws1-dev-iac-spn' Service Principal credentials into the Key Vault, so we can use them with the following command:
 
 ```powershell
-$spnName = 'iac-lab1-task4-spn'
+$spnName = 'iac-ado-ws1-dev-iac-spn'
 $spnMetadataKeyvaultName = '<Azure Key Vault Name you used at lab-01>'
 
 $appID = (az keyvault secret show -n "$spnName-client-id" --vault-name $spnMetadataKeyvaultName --query value -otsv)
 $password = (az keyvault secret show -n "$spnName-secret" --vault-name $spnMetadataKeyvaultName --query value -otsv)
 $tenantID = (az keyvault secret show -n "$spnName-tenant-id" --vault-name $spnMetadataKeyvaultName --query value -otsv)
 
-# Sign in as iac-lab1-task4-spn
+# Sign in as iac-ado-ws1-dev-iac-spn
 az login --service-principal --username $appID --password $password --tenant $tenantID
 [
   {
@@ -296,7 +299,7 @@ az login --service-principal --username $appID --password $password --tenant $te
     "state": "Enabled",
     "tenantId": "...",
     "user": {
-      "name": "5d96ef62-2f1f-4ee2-97ec-947c2101b477",
+      "name": "00000000-0000-0000-0000-000000000000",
       "type": "servicePrincipal"  # note that type is Service Principal
     }
   }
