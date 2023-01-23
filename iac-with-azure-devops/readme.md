@@ -20,7 +20,7 @@ This is an introduction level workshop that covers different aspects of automati
  * [Lab-01](labs/lab-01/readme.md) - provision workshop support resources, get familiar and deploy lab workload
  * [Lab-02](labs/lab-02/readme.md) - working with Azure Service Principal
  * [Lab-03](labs/lab-03/readme.md) - working with Azure DevOps Service Connections
- * Lab-04 - create ADO Repository using `az devops`
+ * [Lab-04](labs/lab-04/readme.md) - create ADO Repository using `az repos`
  * Lab-05 - create ADO release pipeline
  * Lab-06 - putting it all together, create master script that does everything
  * [Lab-7](labs/lab-07/readme.md) - cleaning up resources
