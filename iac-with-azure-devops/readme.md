@@ -18,12 +18,12 @@ This is an introduction level workshop that covers different aspects of automati
  * Welcome + practical information
  * Automate infrastructure provisioning with Azure DevOps
  * [Lab-01](labs/lab-01/readme.md) - provision workshop support resources, get familiar and deploy lab workload
- * Lab-02 - working with Azure Service Principal
- * Lab-03 - working with Azure DevOps Service Connections
- * Lab-07 - create ADO Repository using `az devops`
- * Lab-08 - create ADO release pipeline
- * Lab-09 - putting it all together, create master script that does everything
- * [Lab-10](labs/lab-08/readme.md) - cleaning up resources
+ * [Lab-02](labs/lab-02/readme.md) - working with Azure Service Principal
+ * [Lab-03](labs/lab-03/readme.md) - working with Azure DevOps Service Connections
+ * Lab-04 - create ADO Repository using `az devops`
+ * Lab-05 - create ADO release pipeline
+ * Lab-06 - putting it all together, create master script that does everything
+ * [Lab-7](labs/lab-07/readme.md) - cleaning up resources
 
  
 ## Links

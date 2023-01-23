@@ -361,4 +361,5 @@ To delete `iac-spn` Service Principal, navigate to `Azure Active Directory -> Ap
 * [az role assignment delete](https://learn.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-delete)
 * [az role assignment list](https://learn.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-list)
 
+## Next
 [Go to lab-03](../lab-03/readme.md)

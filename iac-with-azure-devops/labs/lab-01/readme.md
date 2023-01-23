@@ -104,4 +104,5 @@ As you can see, now this resource is tagged with `Deployment` name.
 * [az group create](https://learn.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-create)
 * [az keyvault create](https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-create)
 
+## Next
 [Go to lab-02](../lab-02/readme.md)

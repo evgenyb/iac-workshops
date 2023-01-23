@@ -6,7 +6,6 @@ In this lab you will learn:
 
 * how to create new Azure Resource Manager service connection from Azure Devops portal
 * how to create new Azure Resource Manager service connection using `az devops` extension
-* how to create new Azure Resource Manager service connection using `Azure DevOps REST API` 
 
 
 ## Task #1 - create new Azure Resource Manager service connection at Azure Devops portal
@@ -49,7 +48,7 @@ $subscriptionID = (az account show --query id -otsv)
 $subscriptionName = (az account show --query name -otsv)
 
 # Get SPN credentials from Azure KeyVault
-$spnName = 'iac-lab1-task4-spn'
+$spnName = 'iac-ado-ws1-dev-iac-spn'
 $spnMetadataKeyvaultName = '<Azure Key Vault Name you used at lab-01>'
 
 $servicePrincipalID = (az keyvault secret show -n "$spnName-client-id" --vault-name $spnMetadataKeyvaultName --query value -otsv)
@@ -145,17 +144,16 @@ az devops service-endpoint azurerm create `
     --azure-rm-subscription-id $subscriptionID `
     --azure-rm-subscription-name $subscriptionName `
     --azure-rm-tenant-id $tenantId `
-    --name 'iac-lab2-task2-cs' `
+    --name 'iac-ado-ws1-dev-iac-sc' `
     --project 'iac' 
 
 # Get list of available service connections
 az devops service-endpoint list --project iac --query [].name
 [
-  "iac-lab2-task2-cs",
-  "iac-test-cs"
+  "iac-test-cs",
+  "iac-ado-ws1-dev-iac-sc"
 ]
 ```
-
 
 ## Useful links
 
@@ -165,4 +163,5 @@ az devops service-endpoint list --project iac --query [].name
 * [az devops service-endpoint azurerm](https://learn.microsoft.com/en-us/cli/azure/devops/service-endpoint/azurerm?WT.mc_id=AZ-MVP-5003837&view=azure-cli-latest)
 * [Create Azure DevOps Personal Access Token (PAT)](https://learn.microsoft.com/en-gb/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows#create-a-pat)
 
+## Next
 [Go to lab-04](../lab-04/readme.md)
