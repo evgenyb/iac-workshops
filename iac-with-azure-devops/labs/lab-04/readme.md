@@ -44,15 +44,10 @@ az repos list -p iac
 az repos list -p iac --query [].name
 
 # Show repo info and present it as PowerShell JSon object
-az repos show `
-            --repository iac-test-repo `
-            --project iac `
-            -o json | ConvertFrom-Json
+az repos show --repository iac-test-repo --project iac -o json | ConvertFrom-Json
 
 # Create Git Repo 
-az repos create `
-    --name iac-ado-ws1-iac `
-    --project iac
+az repos create --name iac-ado-ws1-iac --project iac
 
 # List Git repositories names
 az repos list -p iac --query [].name
@@ -122,10 +117,6 @@ git checkout -b dev
 
 # Push dev branch
 git push --set-upstream origin dev
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
-To ssh.dev.azure.com:v3/your_organization/your_project/iac-ado-ws1-iac
- * [new branch]      dev -> dev
-branch 'dev' set up to track 'origin/dev'.
 ```
 
 We have now two branches at the repo: `dev` and `master`
