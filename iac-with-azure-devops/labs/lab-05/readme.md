@@ -5,7 +5,7 @@ Azure DevOps Pipelines automatically builds and tests code projects. It supports
 Azure DevOps supports two type of pipelines:
 
 * Classic - you create and configure pipelines in the Azure DevOps web portal with the Classic user interface editor. Normally, you define a `build pipeline` to build, test and publish your code artifacts. And you define a `release pipeline` to consume and deploy those artifacts to deployment targets.
-* YAML based - you define your pipeline in a YAML file called `azure-pipelines.yml`. The pipeline file is versioned with your code. It follows the same branching structure, therefore you can have different branch specific pipeline definition.
+* YAML based - you define your pipeline in a YAML file called `azure-pipelines.yml`. The pipeline file is versioned with your code. It follows the same branching structure, therefore you can implement different branch specific pipeline definition.
 
 > We will only use YAML based pipelines during workshop!
 
@@ -159,6 +159,10 @@ Note that Virtual Network `iac-ado-ws1-dev-vnet` is also tagged with `BuildVersi
 * [Branch consideration for triggers in YAML pipelines](https://learn.microsoft.com/en-us/azure/devops/pipelines/build/triggers?view=azure-devops#branch-considerations)
 * [Manage your pipeline with Azure CLI](https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/manage-pipelines-with-azure-cli?view=azure-devops)
 * [YAML schema reference for Azure Pipelines](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/?view=azure-pipelines)
+* [az pipelines](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest)
+* [az pipelines create](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest#az-pipelines-create)
+* [az pipelines list](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest#az-pipelines-list)
+
 
 ## Next
 [Go to lab-06](../lab-06/readme.md)
