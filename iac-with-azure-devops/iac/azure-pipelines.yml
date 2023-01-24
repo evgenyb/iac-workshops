@@ -11,13 +11,6 @@ trigger:
       - .gitignore
       - azure-pipelines.yml
 
-schedules:
-  - cron: "0 0 * * *"
-    displayName: Daily midnight build
-    branches:
-      include:
-      - prod      
-
 pool:  
   vmImage: 'ubuntu-20.04'
 

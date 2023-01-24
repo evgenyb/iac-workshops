@@ -18,7 +18,7 @@ Open the Repos page in your project by browsing to https://dev.azure.com/{your_o
 
 ![image](images/task1-1.jpg)
 
-In the `Create a new repository` dialog, select `Gis` is the repository type and enter a name for your repository, for example `iac-test-repo`, set `Add a README` if you want to add an empty README file. You can also select predefined `.gitignore` file, which tells Git what types of files to ignore. 
+In the `Create a new repository` dialog, select `Git` is the repository type and enter a name for your repository, for example `iac-test-repo`, set `Add a README` if you want to add an empty README file. You can also select predefined `.gitignore` file, which tells Git what types of files to ignore. 
 
 ![image](images/task1-2.jpg)
 
@@ -123,6 +123,16 @@ We have now two branches at the repo: `dev` and `master`
 
 ![image](images/task3-2.jpg)
 
+As we defined in our [conventions](../../conventions.md), we follow branch-per-environment branching strategy, therefore we're not going to use `master` branch, because there will be no `master` environment, so we will delete `master` branch. 
+
+Before we delete it, we should make `dev` branch as a default branch for now. 
+
+![image](images/task3-3.jpg)
+
+
+After that, delete `master` branch
+
+![image](images/task3-4.jpg)
 
 ## Useful links
 
