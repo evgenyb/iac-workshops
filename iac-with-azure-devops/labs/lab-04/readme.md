@@ -69,10 +69,10 @@ or with `az repo` command
 
 ```powershell
 # Get iac-ado-ws1-iac ssh url
-(az repos show --repository iac-ado-ws1-iac --project your_project_name -o json | ConvertFrom-Json).sshUrl
+(az repos show --repository iac-ado-ws1-iac --project $projectName -o json | ConvertFrom-Json).sshUrl
 
 # Get iac-ado-ws1-iac HTTPS url
-(az repos show --repository iac-ado-ws1-iac --project your_project_name -o json | ConvertFrom-Json).remoteUrl
+(az repos show --repository iac-ado-ws1-iac --project $projectName -o json | ConvertFrom-Json).remoteUrl
 ```
 
 You can use `HTTPS` or `SSH` as a protocol. If you use `SSH`, then you need to generate and add SSH Public Key under your [User settings](https://dev.azure.com/ifoobar/_usersSettings/keys). Read more about it [here](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops).
