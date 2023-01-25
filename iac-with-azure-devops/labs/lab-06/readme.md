@@ -44,34 +44,18 @@ I've created my version of this [script](../../completed-labs/lab-06/Create-Work
 
 ## Task #2 - use your script and provision new workload called `foobar` into  `test` and `prod` environments
 
+If you use my script, don't forget to change `$azureDevOpsOrganization` and `$spnMetadataKeyvaultName` values and install `account` az devops extension.
+
+```powershell
+# Install account az cli extension
+az extension add -n account
+```
+
 1. Provision workload infrastructure for `test` environment 
 
 ```powershell
-# If you used my script, it requires account az cli extension
-az extension add -n account
-
 # Provision new workload for `test` environment
 ./Create-Workload.ps1 -WorkloadName foobar -CostCenter IaC -Owner 'James Bond' -Environment test -DevOpsProject iac -Location norwayeast 
-
-WARNING: Command group 'account subscription' is experimental and under development. Reference and support levels: https://aka.ms/CLI_refstatus
-Current subscription is 00000000-0000-0000-0000-000000000000 (Microsoft Azure Sponsorship)
-Checking Azure roles assignment for assignee 'evgeny.borzenin@gmail.com' (00000000-0000-0000-0000-000000000000)...
-Creating new resource group iac-foobar-test-rg under Microsoft Azure Sponsorship (00000000-0000-0000-0000-000000000000) subscription in norwayeast region
-Check if SPN iac-foobar-test-iac-spn already exists
-Creating new Azure AD Service Principal iac-foobar-test-iac-spn
-Get iac-foobar-test-iac-spn ObjectId...
-Storing iac-foobar-test-iac-spn client id, client secret and tenant id into the iac-ado-ws1-evg-kv Key Vault:
-    client id -> iac-foobar-test-iac-spn-client-id
-    client secret -> iac-foobar-test-iac-spn-client-secret
-    tenant-id -> iac-foobar-test-iac-spn-tenant-id
-Assigning Owner role to SPN iac-foobar-test-iac-spn (00000000-0000-0000-0000-000000000000) at iac-foobar-test-rg scope
-Creating new Azure DevOps Service Connection iac-foobar-test-iac-sc in iac project under https://dev.azure.com/ifoobar organization
-Check if repository iac-foobar-iac already exists at iac project under https://dev.azure.com/ifoobar organization
-ERROR: TF401019: The Git repository with name or identifier iac-foobar-iac does not exist or you do not have permissions for the operation you are attempting.
-Creating new iac-foobar-iac repository at iac project under https://dev.azure.com/ifoobar organization
-Check if pipeline iac-foobar-iac already exists at iac project under https://dev.azure.com/ifoobar organization
-ERROR: There were no build definitions matching name "iac-foobar-iac" in project "iac".
-Creating pipeline iac-foobar-iac under the iac project
 ```
 
 2. Clone repository and implement IaC code for `test` environment under `test` branch. 

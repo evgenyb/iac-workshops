@@ -117,8 +117,16 @@ Before you can run Azure DevOps commands, you need to run the login command(az l
 az devops login
 Token:
 
+# Set default organization
+az devops configure -d organization=https://dev.azure.com/your_ortganization
+
+# Alternatively, you can use --org flag and send organization url as part of request
+
 # Get Azure DevOps projects
 az devops project list --query value[].name
+
+# Get Azure DevOps projects for specified organization
+az devops project list --org https://dev.azure.com/your_ortganization --query value[].name
 ```
 
 ###  Create Service connection
