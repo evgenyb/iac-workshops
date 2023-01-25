@@ -170,6 +170,43 @@ Note that Virtual Network `iac-ado-ws1-dev-vnet` is also tagged with `BuildVersi
 
 ![image](images/task2-15.jpg)
 
+
+## Task #5 - test that continuos deployment works
+
+Apply any changes into the Bicep implementation. For example, you can add description for `src/deployment.bicep` file at `iac-ado-ws1-iac` repo.
+
+```yaml
+targetScope = 'resourceGroup'
+
+@description('Workload name')
+param workloadName string
+
+...
+```
+
+Commit and push changes.
+
+```powershell
+# make sure you are at the iac-ado-ws1-iac folder
+pwd
+
+# add changes
+git add -A
+
+# commit changes
+git commit -m "Add parameter description"
+git push
+```
+
+Now check the status of the `iac-ado-ws1-iac` pipeline
+
+![images](images/task4-1.jpg)
+
+As you can see, it automatically starts. If you check the `iac-ado-ws1-dev-vnet` resource tags, you will see that it now tagged with latest build number. 
+
+![images](images/task4-2.jpg)
+
+
 ## Useful links
 
 * [What is Azure DevOps Pipelines?](https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?view=azure-devops)
