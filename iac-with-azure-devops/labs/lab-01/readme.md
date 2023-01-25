@@ -37,6 +37,8 @@ iac
          vnet.bicep
       deployment.bicep
       parameters-dev.json
+      parameters-test.json
+      parameters-prod.json
    deploy.ps1        
 ```
 
@@ -54,9 +56,9 @@ iac
 
 This is master deployment file that orchestrates deployment.
 
-### parameters-dev.json
+### parameters-(dev|test|prod).json
 
-Json parameters file representing `dev` environment. It contains environment specific parameters, including:
+Json parameters files representing environments. It contains environment specific parameters, including:
 
 * location
 * vnetConfig - VNet configuration
@@ -68,11 +70,8 @@ Check the [Environments](../../environments.md) file for environment specific co
 We will manually deploy our workshop workload to `dev` environment
 
 ```powershell
-# Goto iac folder
+# Make sure you are inside iac folder
 pwd
-Path
-----
-<path to>\iac-workshops\iac-with-azure-devops\iac
 
 # Create iac-ado-ws1-dev-rg resource group for dev environment
 az group create -n iac-ado-ws1-dev-rg -l norwayeast
