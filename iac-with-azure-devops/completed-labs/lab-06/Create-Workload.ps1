@@ -29,8 +29,8 @@ param (
 )
 process {
     $prefix = "iac"
-    $azureDevOpsOrganization = "https://dev.azure.com/your_organization"
-    $spnMetadataKeyvaultName = "your_keyvault_name"
+    $azureDevOpsOrganization = "https://dev.azure.com/ifoobar"
+    $spnMetadataKeyvaultName = "iac-ado-ws1-evg-kv"
 
     $userName = (az account show --query user.name -o tsv)
     $tenantId = (az account show --query tenantId -o tsv)

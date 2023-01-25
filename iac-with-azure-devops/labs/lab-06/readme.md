@@ -55,7 +55,7 @@ az extension add -n account
 
 ```powershell
 # Provision new workload for `test` environment
-./Create-Workload.ps1 -WorkloadName foobar -CostCenter IaC -Owner 'James Bond' -Environment test -DevOpsProject iac -Location norwayeast 
+./Create-Workload.ps1 -WorkloadName foobar -CostCenter IaC -Owner 'James Bond' -Environment test -DevOpsProject your_project_name -Location norwayeast 
 ```
 
 2. Clone repository and implement IaC code for `test` environment under `test` branch. 
@@ -70,7 +70,7 @@ Remember that you need top Permit access to Service Connection from the pipeline
 
 ```powershell
 # Provision new workload for `prod` environment
-./Create-Workload.ps1 -WorkloadName foobar -CostCenter IaC -Owner 'James Bond' -Environment prod -DevOpsProject iac -Location norwayeast 
+./Create-Workload.ps1 -WorkloadName foobar -CostCenter IaC -Owner 'James Bond' -Environment prod -DevOpsProject your_project_name -Location norwayeast 
 
 ```
 
