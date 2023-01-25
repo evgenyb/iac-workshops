@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "norwayeast"
+        },
+        "vnetConfig": {
+            "value": {
+                "addressPrefix": "10.10.1.0/25",
+                "bastionSubnetPrefix": "10.10.1.0/26",
+                "workloadSubnetPrefix": "10.10.1.64/26"
+            }
+        }
+    }
+}
