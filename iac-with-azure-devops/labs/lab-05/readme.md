@@ -103,11 +103,12 @@ Confirm deletion by typing pipeline name and click `Delete`
 As with repos, `az pipelines` command group is a part of the azure-devops extension.
 
 ```powershell
+$projectName = 'your_project_name'
 # Create new pipeline
 az pipelines create `
     --name iac-ado-ws1-iac `
     --description 'Pipeline for Workload IaC deployment' `
-    --project iac `
+    --project $projectName `
     --repository iac-ado-ws1-iac `
     --branch dev `
     --repository-type tfsgit `
@@ -115,7 +116,7 @@ az pipelines create `
     --skip-first-run true
 
 # Get list of pipeline names 
-az pipelines list -p your_project_name -o json | ConvertFrom-Json
+az pipelines list -p $projectName -o json | ConvertFrom-Json
 ```
 
 `az pipelines create` uses a lot of parameters. The important one for us are:

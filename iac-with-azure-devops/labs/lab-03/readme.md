@@ -144,6 +144,8 @@ As you can see, it requires the same information we used when we created New Ser
 
 
 ```powershell
+$projectName = 'your_project_name'
+
 # Set AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY environment variable
 $env:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY = $servicePrincipalKey
 
@@ -153,10 +155,10 @@ az devops service-endpoint azurerm create `
     --azure-rm-subscription-name $subscriptionName `
     --azure-rm-tenant-id $tenantId `
     --name 'iac-ado-ws1-iac-dev-sc' `
-    --project 'iac' 
+    --project $projectName 
 
 # Get list of available service connections
-az devops service-endpoint list --project iac --query [].name
+az devops service-endpoint list --project $projectName --query [].name
 [
   "iac-test-cs",
   "iac-ado-ws1-iac-dev-sc"
