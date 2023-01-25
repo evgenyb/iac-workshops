@@ -115,7 +115,7 @@ az pipelines create `
     --skip-first-run true
 
 # Get list of pipeline names 
-az pipelines list -p iac -o json | ConvertFrom-Json
+az pipelines list -p your_project_name -o json | ConvertFrom-Json
 ```
 
 `az pipelines create` uses a lot of parameters. The important one for us are:

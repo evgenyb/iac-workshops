@@ -38,10 +38,10 @@ Here you can change repository settings, `Rename` or `Delete` it.
 
 ```powershell
 # List Git repositories of a team project
-az repos list -p iac
+az repos list -p your_project_name
 
 # List Git repositories names
-az repos list -p iac --query [].name
+az repos list -p your_project_name --query [].name
 
 # Show repo info and present it as PowerShell JSon object
 az repos show --repository iac-test-repo --project iac -o json | ConvertFrom-Json
@@ -50,7 +50,7 @@ az repos show --repository iac-test-repo --project iac -o json | ConvertFrom-Jso
 az repos create --name iac-ado-ws1-iac --project iac
 
 # List Git repositories names
-az repos list -p iac --query [].name
+az repos list -p your_project_name --query [].name
 [
   "iac-test-repo",
   "iac-ado-ws1-iac"
