@@ -36,6 +36,6 @@ For this workshop we use the following conventions:
 |--|--|--|
 | Azure DevOps Workload IaC Repository | iac-{workload-name}-iac | iac-ado-ws1-iac |
 | Azure DevOps Workload Deployment Pipeline | iac-{workload-name}-iac | iac-ado-ws1-iac |
-| Azure DevOps Service Connection | iac-{workload-name}-{environment}-sc | iac-ado-ws1-dev-iac-sc, iac-ado-ws1-test-iac-sc, iac-ado-ws1-prod-iac-sc |
+| Azure DevOps Service Connection | iac-{workload-name}-iac-{environment}-sc | iac-ado-ws1-iac-dev-sc, iac-ado-ws1-iac-test-sc, iac-ado-ws1-iac-prod-sc |
 
 

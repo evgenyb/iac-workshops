@@ -22,8 +22,8 @@ This is an introduction level workshop that covers different aspects of automati
  * [Lab-03](labs/lab-03/readme.md) - working with Azure DevOps Service Connections
  * [Lab-04](labs/lab-04/readme.md) - working with Azure DevOps Repositories
  * [Lab-05](labs/lab-05/readme.md) - working with Azure DevOps Pipelines
- * Lab-06 - putting it all together, create master script that does everything
- * [Lab-7](labs/lab-07/readme.md) - cleaning up resources
+ * [Lab-06](labs/lab-06/readme.md) - putting it all together, implement workload provisioning script
+ * [Lab-07](labs/lab-07/readme.md) - cleaning up resources
 
  
 ## Links

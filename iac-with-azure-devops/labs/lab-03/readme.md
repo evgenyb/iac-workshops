@@ -144,14 +144,14 @@ az devops service-endpoint azurerm create `
     --azure-rm-subscription-id $subscriptionID `
     --azure-rm-subscription-name $subscriptionName `
     --azure-rm-tenant-id $tenantId `
-    --name 'iac-ado-ws1-dev-iac-sc' `
+    --name 'iac-ado-ws1-iac-dev-sc' `
     --project 'iac' 
 
 # Get list of available service connections
 az devops service-endpoint list --project iac --query [].name
 [
   "iac-test-cs",
-  "iac-ado-ws1-dev-iac-sc"
+  "iac-ado-ws1-iac-dev-sc"
 ]
 ```
 

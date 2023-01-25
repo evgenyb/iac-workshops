@@ -48,7 +48,7 @@ pool:
   vmImage: 'ubuntu-20.04'
 
 variables:
-  serviceConnection: iac-ado-ws1-$(Build.SourceBranchName)-iac-sc
+  serviceConnection: $(Build.DefinitionName)-$(Build.SourceBranchName)-sc
   environment: $(Build.SourceBranchName)
 
 steps:
