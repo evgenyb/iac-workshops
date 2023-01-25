@@ -20,7 +20,15 @@ In this lab you will learn:
 
 A YAML based pipeline is defined using a YAML file in your repo. Usually, this file is called `azure-pipelines.yml` and it should be located at the root of your repository. 
 
-I already created file for our workload deployment. Open `azure-pipelines.yml` file located at the root of `iac-ado-ws1-iac` repo and let's walk through the content of this file.
+A pipeline is one or more stages that describe a CI/CD process. Stages are the major divisions in a pipeline. The stages "Build this app," "Run these tests," and "Deploy to preproduction" are good examples. 
+
+A stage is one or more jobs, which are units of work assignable to the same machine. You can arrange both stages and jobs into dependency graphs. Examples include "Run this stage before that one" and "This job depends on the output of that job."
+
+A job is a linear series of steps. Steps can be tasks, scripts, or references to external templates.
+
+In our case, we will use the simplest possible use-case. That is - single implicit job and stage. 
+
+I already created file for our workload deployment. Open `azure-pipelines.yml` file located at the root of `iac-ado-ws1-iac` repo and let's walk through the content of this file:
 
 ```yaml
 name: $(Build.DefinitionName)-$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
@@ -53,6 +61,14 @@ steps:
     scriptPath: ./deploy.ps1
     arguments: '-Environment ${{ variables.environment }} -DeploymentName $(Build.BuildNumber)'
 ```
+
+* `name` -  defines pipeline run number (or release version). In our case we build it as a `pipelineName-branchName-YYYYMMDD.revision_within_the_day`
+* `trigger.branches` - specifies which branch(es) cause a pipeline to run. We configured that changes at `dev`, `test` and `prod` branches will start the pipeline
+* `trigger.paths` - specifies file paths to include or exclude for triggering a run. In our case we excluding `readme.md`, `.gitignore` and `azure-pipelines.yml` files
+* `pool` - specifies which pool to use for a job of the pipeline
+* `variables` - define variables to use in the pipeline. We use two variables: `environment` - which is the same as the branch and `serviceConnection` - which is a reference to the service connection associated with current environment (or branch)
+* `steps` - are a linear sequence of operations that make up a job
+* `steps:task` - runs a task. [Tasks](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/?view=azure-pipelines) are the building blocks of a pipeline. There's a catalog of tasks available to choose from. We use [AzureCLI@2task](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-cli-v2?view=azure-pipelines) - Azure CLI v2 task which runs Azure CLI commands in a PowerShell Core/shell script. `scriptPath` tells that we run `deploy.ps1` script with `-Environment ${{ variables.environment }} -DeploymentName $(Build.BuildNumber)` parameters defined at `arguments` and that script should be running under the context of Service Principal associated with Azure DevOps Service Connection defined at `azureSubscription` parameter.
 
 ## Task #2 - create new YAML based pipeline from the Azure DevOps portal
 
@@ -162,7 +178,7 @@ Note that Virtual Network `iac-ado-ws1-dev-vnet` is also tagged with `BuildVersi
 * [az pipelines](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest)
 * [az pipelines create](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest#az-pipelines-create)
 * [az pipelines list](https://learn.microsoft.com/en-us/cli/azure/pipelines?view=azure-cli-latest#az-pipelines-list)
-
+* [AzureCLI@2 - Azure CLI v2 task](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-cli-v2?view=azure-pipelines)
 
 ## Next
 [Go to lab-06](../lab-06/readme.md)
