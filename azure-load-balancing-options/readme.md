@@ -14,8 +14,11 @@ and many many more...
 
 ## Agenda
  
-WIP. Will be available shortly...
- 
+* Welcome + practical information
+* [Slides] - Load-balancing options on Azure
+* [Lab-01](labs/lab-01/readme.md) - provision workshop infrastructure
+* [Lab-07](labs/lab-07/readme.md) - cleaning up resources
+  
 ## Links
 
 * [Prerequisites](prerequisites.md)
