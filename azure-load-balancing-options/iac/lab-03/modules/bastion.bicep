@@ -5,7 +5,7 @@ param prefix string
 param bastionSubnetId string
 
 var bastionHostName = '${prefix}-bas'
-var bastionPublicIpAddressName = '${bastionHostName}PublicIp'
+var bastionPublicIpAddressName = '${bastionHostName}-pip'
 
 resource bastionPublicIpAddress 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
   name: bastionPublicIpAddressName
