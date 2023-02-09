@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "locations": {
+            "value": [
+                {
+                    "location": "norwayeast",
+                    "testVMName": "testvm-no",
+                    "workloadVMName": "iis-vm-no",
+                    "vnetConfig": {
+                        "addressPrefix": "10.10.0.0/22",
+                        "workloadSubnetPrefix": "10.10.0.0/24"
+                    }                    
+                },
+                {
+                    "location": "eastus",
+                    "testVMName": "testvm-us",
+                    "workloadVMName": "iis-vm-us",
+                    "vnetConfig": {
+                        "addressPrefix": "10.20.0.0/22",
+                        "workloadSubnetPrefix": "10.20.0.0/24"
+                    }                    
+                }                
+            ]
+        }
+    }
+}
