@@ -2,10 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "locations": {
+        "virtualMachines": {
             "value": [
                 {
                     "location": "norwayeast",
+                    "vmCount": 2,
                     "testVMName": "testvm-no",
                     "workloadVMName": "iis-vm-no",
                     "vnetConfig": {
@@ -15,6 +16,7 @@
                 },
                 {
                     "location": "eastus",
+                    "vmCount": 2,
                     "testVMName": "testvm-us",
                     "workloadVMName": "iis-vm-us",
                     "vnetConfig": {

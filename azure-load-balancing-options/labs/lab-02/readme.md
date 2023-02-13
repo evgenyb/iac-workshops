@@ -23,6 +23,7 @@ https://learn.microsoft.com/en-us/azure/load-balancer/quickstart-load-balancer-s
 https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-bicep-windows?tabs=CLI
 https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/tutorial-connect-to-instances-cli
 https://learn.microsoft.com/en-us/azure/load-balancer/backend-pool-management
+https://learn.microsoft.com/en-us/azure/load-balancer/monitor-load-balancer
 
 ## Next
 [Go to lab-03](../lab-03/readme.md)

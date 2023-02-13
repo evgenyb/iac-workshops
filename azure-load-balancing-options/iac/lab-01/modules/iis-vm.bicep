@@ -4,6 +4,7 @@ param adminUsername string
 @secure()
 param adminPassword string
 param vmName string
+param vmCount int
 
 var networkInterfaceName = '${vmName}-nic'
 var nsgName = '${vmName}-nsg'
@@ -11,8 +12,8 @@ var publicIpName = '${vmName}-pip'
 var dnsLabelPrefix = toLower('${vmName}-${uniqueString(resourceGroup().id, vmName, location)}')
 var vmSize  = 'Standard_B2ms'
 
-resource pip 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
-  name: publicIpName
+resource pips 'Microsoft.Network/publicIPAddresses@2022-05-01' = [for i in range(0, vmCount): {
+  name: '${publicIpName}-${i}'
   location: location
   sku: {
     name: 'Standard'
@@ -20,10 +21,10 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
   properties: {
     publicIPAllocationMethod: 'Static'
     dnsSettings: {
-      domainNameLabel: dnsLabelPrefix
+      domainNameLabel: '${dnsLabelPrefix}-${i}'
     }
   }
-}
+}]
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: nsgName
@@ -47,8 +48,8 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
-  name: networkInterfaceName
+resource nics 'Microsoft.Network/networkInterfaces@2022-07-01' = [for i in range(0, vmCount): {
+  name: '${networkInterfaceName}-${i}'
   location: location
   properties: {
     ipConfigurations: [
@@ -60,7 +61,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
             id: subnetId
           }
           publicIPAddress: {
-            id: pip.id
+            id: pips[i].id
           }          
           primary: true
           privateIPAddressVersion: 'IPv4'          
@@ -73,11 +74,11 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
       id: nsg.id
     }
   }
-}
+}]
 
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
-  name: vmName
+resource virtualMachines 'Microsoft.Compute/virtualMachines@2022-11-01' = [for i in range(0, vmCount): {
+  name: '${vmName}-${i}'
   location: location
   properties: {
     hardwareProfile: {
@@ -101,7 +102,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       }
     }
     osProfile: {
-      computerName: vmName
+      computerName: '${vmName}-${i}'
       adminUsername: adminUsername
       adminPassword: adminPassword
       windowsConfiguration: {
@@ -113,16 +114,16 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
+          id: nics[i].id
         }
       ]
     }
   }
-}
+}]
 
-resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = [for i in range(0, vmCount): {
   name: 'IIS'
-  parent: virtualMachine
+  parent: virtualMachines[i]
   location: location
   properties: {
     autoUpgradeMinorVersion: true
@@ -133,4 +134,4 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-1
       commandToExecute: 'powershell Add-WindowsFeature Web-Server; powershell Set-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
     }
   }
-}
+}]

@@ -4,7 +4,7 @@
 
 ```powershell
 # Deploy VM to norwayeast
-az deployment sub create -l norwayeast --template-file template.bicep -p parameters.json -n lab01
+./deploy.ps1
 ```
 
 > Deployment takes approx. xx min.
