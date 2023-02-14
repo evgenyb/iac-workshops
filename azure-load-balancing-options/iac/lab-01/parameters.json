@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "hubVnetConfig": {
+            "value": {
+                "addressPrefix": "10.0.0.0/22",
+                "bastionSubnetPrefix": "10.0.0.0/26",
+                "agwSubnetPrefix": "10.0.1.0/24"
+            }
+        },        
         "virtualMachines": {
             "value": [
                 {

@@ -45,6 +45,7 @@ function Get-RandomPassword {
 
 $password = Get-RandomPassword 12 -upper 5 -numeric 5
 $location = 'norwayeast'
+$signedUserId = (az ad signed-in-user show --query id -o tsv)
 
-az deployment sub create -l $location --template-file template.bicep -p parameters.json -p location=$location -p adminPassword=$password  -n lab01
+az deployment sub create -l $location --template-file template.bicep -p parameters.json -p location=$location -p signedInUserId=$signedUserId -p adminPassword=$password  -n lab01
 

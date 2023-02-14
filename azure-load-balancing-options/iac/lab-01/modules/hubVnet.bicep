@@ -2,7 +2,7 @@ param location string
 param prefix string
 param vnetConfig object
 
-var virtualNetworkName = '${prefix}-${location}-vnet'
+var virtualNetworkName = '${prefix}-vnet'
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: virtualNetworkName
@@ -15,18 +15,25 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
     }
     subnets: [
       {
-        name: 'workload-snet'
+        name: 'AzureBastionSubnet'
         properties: {
-          addressPrefix: vnetConfig.workloadSubnetPrefix
+          addressPrefix: vnetConfig.bastionSubnetPrefix
+        }
+      }
+      {
+        name: 'agw-snet'
+        properties: {
+          addressPrefix: vnetConfig.agwSubnetPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
         }
-      }
+      }    
     ]
     enableDdosProtection: false
     enableVmProtection: false
   }
 }
 
-output workloadSubnetId string = '${vnet.id}/subnets/workload-snet'
-output name string = vnet.name
+output bastionSubnetId string = '${vnet.id}/subnets/AzureBastionSubnet'
+output agwSubnetId string = '${vnet.id}/subnets/agw-snet'
+output name string = vnet.name  
