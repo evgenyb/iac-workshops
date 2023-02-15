@@ -16,6 +16,15 @@ resource hubRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   location: location
 }
 
+module agwPip 'modules/agw.bicep' = {
+  scope: hubRg
+  name: 'agwPip'
+  params: {
+    location: location
+    prefix: prefix
+  }
+}
+
 module hubVNet 'modules/hubVnet.bicep' = {
   name: 'hubVNet'
    scope: hubRg
@@ -92,6 +101,7 @@ module iis_vms 'modules/iis-vm.bicep' = [for (item, i) in virtualMachines: {
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
     vmCount: item.vmCount
+    path: item.path
   }
 }]
 

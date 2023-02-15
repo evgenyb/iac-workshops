@@ -13,6 +13,7 @@
             "value": [
                 {
                     "location": "norwayeast",
+                    "path": "no",
                     "vmCount": 2,
                     "testVMName": "testvm-no",
                     "workloadVMName": "iis-vm-no",
@@ -23,6 +24,7 @@
                 },
                 {
                     "location": "eastus",
+                    "path": "us",
                     "vmCount": 2,
                     "testVMName": "testvm-us",
                     "workloadVMName": "iis-vm-us",

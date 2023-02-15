@@ -43,9 +43,13 @@ function Get-RandomPassword {
     return $password
 }
 
-$password = Get-RandomPassword 12 -upper 5 -numeric 5
+Write-Host "Generating random password for VM admin user..."
+$password = Get-RandomPassword 12 -special 1 -numeric 1 -upper 3 -lower 7
 $location = 'norwayeast'
+
+Write-Host "Get current user AAD object id..."
 $signedUserId = (az ad signed-in-user show --query id -o tsv)
 
+Write-Host "Deploying workshop lab infra into $location..."
 az deployment sub create -l $location --template-file template.bicep -p parameters.json -p location=$location -p signedInUserId=$signedUserId -p adminPassword=$password  -n lab01
 

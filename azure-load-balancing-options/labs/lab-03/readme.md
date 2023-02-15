@@ -1,18 +1,11 @@
 # lab-03 - working with Azure Application Gateway
 
-## AGW with VMs 
+## create AGW from portal - all 4 vms from both regions as backend pool
+## new listener, 2 new pools no and us. new rule that orchestrates traffic /no /en
 
-```powershell
-$resourceGroupName = 'iac-ws2-lab03-rg'
+## read headers and redirect traffic to pools
 
-# Create Resource Group
-az group create -n $resourceGroupName -l norwayeast
-
-# Deploy workload
-az deployment group create -g $resourceGroupName --template-file template.bicep -n lab-03
-```
-
-> Deployment takes approx. 8 min.
+## enrich response with new headers
 
 ## Links
 
