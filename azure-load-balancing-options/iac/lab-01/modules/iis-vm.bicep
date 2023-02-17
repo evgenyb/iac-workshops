@@ -132,7 +132,7 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-1
     type: 'CustomScriptExtension'
     typeHandlerVersion: '1.10'
     settings: {
-      commandToExecute: 'powershell Add-WindowsFeature Web-Server; powershell Set-Content -Path C:\\inetpub\\wwwroot\\index.htm -Value $($env:computername); powershell New-Item -ItemType directory -Path C:\\inetpub\\wwwroot\\${path}\\ -Force; powershell Set-Content -Path C:\\inetpub\\wwwroot\\${path}\\index.htm -Value $($env:computername)'
+      commandToExecute: 'powershell Add-WindowsFeature Web-Server; powershell Set-Content -Path C:\\inetpub\\wwwroot\\index.htm -Value $($env:computername); powershell New-Item -ItemType directory -Path C:\\inetpub\\wwwroot\\${path}\\ -Force; powershell Set-Content -Path C:\\inetpub\\wwwroot\\${path}\\index.htm -Value ${path}'
     }
   }
 }]
