@@ -103,5 +103,63 @@ If all is good, you will see your VM desktop and you can check the `Don't show t
 
 ![3](images/12.jpg)
 
+## Task #5 - test connectivity to workload VMs
+
+From the `testvm-no` VM, let's use powershell to ping `iis-vm-no-0` and `iis-vm-no-1` VMs. Start PowerShell session
+
+![3](images/13.jpg)
+
+and run the following commands:
+
+```powershell
+# ping iis-vm-no-0
+ping iis-vm-no-0
+
+Pinging iis-vm-no-0.......oslx.internal.cloudapp.net [10.10.0.6] with 32 bytes of data:
+Request timed out.
+
+Ping statistics for 10.10.0.6:
+    Packets: Sent = 1, Received = 0, Lost = 1 (100% loss),
+Control-C
+```
+
+The VM is not "pingable", because port is closed at the firewall. Try the same command for `iis-vm-no-0`. You should get the same result.
+
+Now, lets' try to curl the web page from the `testvm-no` VM. Run the following command:
+
+```powershell
+# curl iis-vm-no-0
+PS C:\Users\jamesbond> curl iis-vm-no-0
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : iis-vm-no-0
+
+RawContent        : HTTP/1.1 200 OK
+                    Accept-Ranges: bytes
+                    Content-Length: 13
+                    Content-Type: text/html
+                    Date: Fri, 17 Feb 2023 13:52:45 GMT
+                    ETag: "cfc9f1efd042d91:0"
+                    Last-Modified: Fri, 17 Feb 2023 13:08:33 GMT
+                    Server...
+Forms             : {}
+Headers           : {[Accept-Ranges, bytes], [Content-Length, 13], [Content-Type, text/html], [Date, Fri, 17 Feb 2023
+                    13:52:45 GMT]...}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : System.__ComObject
+RawContentLength  : 13
+
+# only show the Content
+curl iis-vm-no-0 | select -ExpandProperty Content
+iis-vm-no-0
+
+curl iis-vm-no-1 | select -ExpandProperty Content
+iis-vm-no-1
+```
+
 ## Next
 [Go to lab-02](../lab-02/readme.md)
