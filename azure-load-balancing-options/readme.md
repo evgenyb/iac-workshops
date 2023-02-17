@@ -21,7 +21,7 @@ and many many more...
 * [Lab-03](labs/lab-03/readme.md) - working with Azure Application Gateway
 * [Lab-04](labs/lab-04/readme.md) - working with Azure Traffic Manager
 * [Lab-05](labs/lab-05/readme.md) - working with Azure Front Door
-* [Lab-07](labs/lab-07/readme.md) - cleaning up resources
+* [Lab-06](labs/lab-06/readme.md) - cleaning up resources
   
 ## Links
 
