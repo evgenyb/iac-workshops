@@ -73,3 +73,16 @@ choco install git
 # Install with winget
 winget install Git.Git
 ```
+
+## Install load testing tool k6
+
+```powershell
+# Install k6 for Mac
+brew install k6
+
+# Install k6 with choco
+choco install k6
+
+# Install with winget
+winget install k6.k6
+```

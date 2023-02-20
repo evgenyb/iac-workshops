@@ -16,7 +16,7 @@
                     "path": "no",
                     "vmCount": 2,
                     "testVMName": "testvm-no",
-                    "workloadVMName": "iis-vm-no",
+                    "workloadVMName": "vm-no",
                     "vnetConfig": {
                         "addressPrefix": "10.10.0.0/22",
                         "workloadSubnetPrefix": "10.10.0.0/24"
@@ -27,7 +27,7 @@
                     "path": "us",
                     "vmCount": 2,
                     "testVMName": "testvm-us",
-                    "workloadVMName": "iis-vm-us",
+                    "workloadVMName": "vm-us",
                     "vnetConfig": {
                         "addressPrefix": "10.20.0.0/22",
                         "workloadSubnetPrefix": "10.20.0.0/24"

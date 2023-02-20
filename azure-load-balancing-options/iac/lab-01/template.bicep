@@ -88,15 +88,33 @@ resource secretsKV 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   scope: az.resourceGroup(subscription().subscriptionId, hubResourceGroupName)
 }
 
-module iis_vms 'modules/iis-vm.bicep' = [for (item, i) in virtualMachines: {
-  name: 'iis-vm'
+module lab02_vms 'modules/lab02-vms.bicep' = [for (item, i) in virtualMachines: {
+  name: 'lab02-vm'
   scope: rg[i]
   dependsOn: [
     kv
   ]
   params: {
     location: item.location
-    vmName: item.workloadVMName
+    prefix: prefix
+    vmName: 'lab02-${item.workloadVMName}'
+    adminUsername: adminUsername
+    adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
+    subnetId: vnets[i].outputs.workloadSubnetId
+    vmCount: item.vmCount
+    path: item.path
+  }
+}]
+
+module lab03_vms 'modules/lab03-vms.bicep' = [for (item, i) in virtualMachines: {
+  name: 'lab03-vm'
+  scope: rg[i]
+  dependsOn: [
+    kv
+  ]
+  params: {
+    location: item.location
+    vmName: 'lab03-${item.workloadVMName}'
     adminUsername: adminUsername
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
