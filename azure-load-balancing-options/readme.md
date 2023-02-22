@@ -14,12 +14,19 @@ and many many more...
 
 ## Agenda
  
-WIP. Will be available shortly...
- 
+* Welcome + practical information
+* [Slides] - Load-balancing options on Azure
+* Lab-01 - provision workshop infrastructure
+* Lab-02 - working with Azure Load Balancer
+* Lab-03 - working with Azure Application Gateway
+* Lab-04 - working with Azure Traffic Manager
+* Lab-05 - working with Azure Front Door
+* Lab-06 - cleaning up resources
+  
 ## Links
 
 * [Prerequisites](prerequisites.md)
-
+* [Naming conventions](conventions.md)
 
 ## Feedback
 
