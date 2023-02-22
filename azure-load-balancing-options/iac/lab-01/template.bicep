@@ -9,6 +9,23 @@ param signedInUserId string
 
 var prefix = 'iac-ws2'
 var vmAdminPasswordSecretName = 'vmadmin-password'
+
+var testingResourceGroupName = '${prefix}-testing-rg'
+
+resource testingRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: testingResourceGroupName
+  location: 'westeurope'
+}
+
+module LoadTester 'modules/loadtester.bicep' = {
+  scope: testingRg
+  name: 'loadtester'
+  params: {
+    prefix: prefix
+    location: 'westeurope'    
+  }
+}
+
 var hubResourceGroupName = '${prefix}-rg'
 
 resource hubRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -106,19 +123,19 @@ module lab02_vms 'modules/lab02-vms.bicep' = [for (item, i) in virtualMachines: 
   }
 }]
 
-module lab03_vms 'modules/lab03-vms.bicep' = [for (item, i) in virtualMachines: {
-  name: 'lab03-vm'
+module lab03_vms 'modules/lab04-vms.bicep' = [for (item, i) in virtualMachines: {
+  name: 'lab04-vm'
   scope: rg[i]
   dependsOn: [
     kv
   ]
   params: {
     location: item.location
-    vmName: 'lab03-${item.workloadVMName}'
+    vmName: 'lab04-${item.workloadVMName}'
     adminUsername: adminUsername
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
-    vmCount: item.vmCount
+    vmCount: 1
     path: item.path
   }
 }]

@@ -60,6 +60,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: vmName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     hardwareProfile: {
       vmSize: vmSize
@@ -101,3 +104,15 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   }
 }
 
+resource windowsAgent 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+  name: 'AzureMonitorWindowsAgent'
+  parent: virtualMachine
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Monitor'
+    type: 'AzureMonitorWindowsAgent'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: true
+  }
+}

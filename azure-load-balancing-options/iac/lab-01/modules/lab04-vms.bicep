@@ -77,10 +77,12 @@ resource nics 'Microsoft.Network/networkInterfaces@2022-07-01' = [for i in range
   }
 }]
 
-
 resource virtualMachines 'Microsoft.Compute/virtualMachines@2022-11-01' = [for i in range(0, vmCount): {
   name: '${vmName}-${i}'
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     hardwareProfile: {
       vmSize: vmSize
@@ -134,5 +136,18 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-1
     settings: {
       commandToExecute: 'powershell Add-WindowsFeature Web-Server; powershell Set-Content -Path C:\\inetpub\\wwwroot\\index.htm -Value $($env:computername); powershell New-Item -ItemType directory -Path C:\\inetpub\\wwwroot\\${path}\\ -Force; powershell Set-Content -Path C:\\inetpub\\wwwroot\\${path}\\index.htm -Value ${path}'
     }
+  }
+}]
+
+resource windowsAgents 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = [for i in range(0, vmCount): {
+  name: 'AzureMonitorWindowsAgent'
+  parent: virtualMachines[i]
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Monitor'
+    type: 'AzureMonitorWindowsAgent'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: true
   }
 }]

@@ -25,21 +25,20 @@ export default function () {
 }
 ```
 
-run k6 with this command:
+run k6 with the following command:
     
 ```powershell
-# run k6 with 50 virtual users for 5 minutes
-k6 run --vus 50 --duration 10m script.js
+# run k6 with 50 virtual users for 20 minutes
+k6 run --vus 50 --duration 20m script.js
 ```
 
-k6 run --vus 10 --duration 30s script.js
-```
+## Task #3 - monitor Azure Load Balancer with Insights
 
-## Task #3 - monitor Azure Load Balancer
+* walk through the ALB Insights dashboard
+* walk through the ALB Insights metrics
+* stop one of the VMs and see how the load balancer reacts
+* Azure Load Balancer metrics    
 
-## Task #4 - load balancer metrics snd diagnostics
-
-> Deployment takes approx. 6 min.
 
 ## Links
 
