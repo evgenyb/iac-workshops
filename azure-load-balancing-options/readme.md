@@ -26,7 +26,7 @@ and many many more...
 ## Links
 
 * [Prerequisites](prerequisites.md)
-
+* [Naming conventions](conventions.md)
 
 ## Feedback
 
