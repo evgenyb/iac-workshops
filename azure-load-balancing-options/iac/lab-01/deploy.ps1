@@ -43,6 +43,9 @@ function Get-RandomPassword {
     return $password
 }
 
+$stopwatch = [System.Diagnostics.Stopwatch]::new()
+$stopwatch.Start()
+
 Write-Host "Generating random password for VM admin user..."
 $password = Get-RandomPassword 12 -special 1 -numeric 1 -upper 3 -lower 7
 $location = 'norwayeast'
@@ -53,3 +56,6 @@ $signedUserId = (az ad signed-in-user show --query id -o tsv)
 Write-Host "Deploying workshop lab infra into $location..."
 az deployment sub create -l $location --template-file template.bicep -p parameters.json -p location=$location -p signedInUserId=$signedUserId -p adminPassword=$password  -n lab01
 
+$stopwatch.Stop()
+
+Write-Host "Deployment time: " $stopwatch.Elapsed 

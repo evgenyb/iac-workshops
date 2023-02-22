@@ -6,6 +6,7 @@ param adminPassword string
 param virtualMachines array
 param hubVnetConfig object
 param signedInUserId string
+param loadTesterLocation string = 'westeurope'
 
 var prefix = 'iac-ws2'
 var vmAdminPasswordSecretName = 'vmadmin-password'
@@ -14,7 +15,7 @@ var testingResourceGroupName = '${prefix}-testing-rg'
 
 resource testingRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: testingResourceGroupName
-  location: 'westeurope'
+  location: loadTesterLocation
 }
 
 module LoadTester 'modules/loadtester.bicep' = {

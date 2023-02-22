@@ -13,4 +13,7 @@ az group delete --name iac-ws2-norwayeast-rg --yes --no-wait
 
 # Delete iac-ws2-eastus-rg resource group
 az group delete --name iac-ws2-eastus-rg --yes --no-wait
+
+# Delete iac-ws2-testing-rg resource group
+az group delete --name iac-ws2-testing-rg --yes --no-wait
 ```

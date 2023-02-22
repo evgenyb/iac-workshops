@@ -61,8 +61,7 @@ First, let's deploy lab infrastructure. We will use PowerShell script for that.
 ./deploy.ps1
 ```
 
-> Note! Deployment may take up to 5 minutes.
-
+> Note! Deployment may take up to 5-10 minutes.
 
 ## Task #2 - create your lab dashboard
 
@@ -120,7 +119,7 @@ echo $kvName
 az keyvault secret show --name vmadmin-password --vault-name $kvName  --query value -otsv
 ```
 
-## Task #4 - try to login to one of the test VMs
+## Task #4 - remote into one of the test VMs
 
 Let's try to remote into one of the VMs to test that all connectivity is working. I will use `testvm-no` here as an example.
 
