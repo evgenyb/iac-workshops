@@ -66,7 +66,7 @@ First, let's deploy lab infrastructure. We will use PowerShell script for that.
 
 ## Task #2 - create your lab dashboard
 
-To improve observability and simplify navigation through lab resources, let's collect all resources under Azure dashboard.
+To improve observability and simplify navigation through lab resources, let's collect all resources under [Azure dashboard](https://learn.microsoft.com/en-us/azure/azure-portal/azure-portal-dashboards).
 
 Go to `Dashboards` on Azure portal.
 
@@ -201,6 +201,7 @@ lab02-vm-no-1
 ## Useful links
 
 * [What is Azure Load Testing?](https://learn.microsoft.com/en-us/azure/load-testing/overview-what-is-azure-load-testing)
+* [Create a dashboard in the Azure portal](https://learn.microsoft.com/en-us/azure/azure-portal/azure-portal-dashboards)
 
 ## Next
 [Go to lab-02](../lab-02/readme.md)
