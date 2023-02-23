@@ -7,6 +7,8 @@ Azure Load Balancer operates at layer 4 of the Open Systems Interconnection (OSI
 
 A public load balancer can provide outbound connections for virtual machines (VMs) inside your virtual network. These connections are accomplished by translating their private IP addresses to public IP addresses. Public Load Balancers are used to load balance internet traffic to your VMs.
 
+![1](images/lab2.png)
+
 In this lab you will learn how to:
 
 * create a public Azure Load Balancer to load balance two Virtual Machines using portal
