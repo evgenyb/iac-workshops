@@ -106,7 +106,7 @@ resource secretsKV 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   scope: az.resourceGroup(subscription().subscriptionId, hubResourceGroupName)
 }
 
-module lab02_vms 'modules/lab02-vms.bicep' = [for (item, i) in virtualMachines: {
+module lab02_vms 'modules/internal-vm.bicep' = [for (item, i) in virtualMachines: {
   name: 'lab02-vm'
   scope: rg[i]
   dependsOn: [
@@ -120,11 +120,27 @@ module lab02_vms 'modules/lab02-vms.bicep' = [for (item, i) in virtualMachines: 
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
     vmCount: item.vmCount
-    path: item.path
   }
 }]
 
-module lab03_vms 'modules/lab04-vms.bicep' = [for (item, i) in virtualMachines: {
+module lab03_vms 'modules/internal-vm.bicep' = [for (item, i) in virtualMachines: {
+  name: 'lab03-vm'
+  scope: rg[i]
+  dependsOn: [
+    kv
+  ]
+  params: {
+    location: item.location
+    prefix: prefix
+    vmName: 'lab03-${item.workloadVMName}'
+    adminUsername: adminUsername
+    adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
+    subnetId: vnets[i].outputs.workloadSubnetId
+    vmCount: item.vmCount
+  }
+}]
+
+module lab04_vms 'modules/public-vm.bicep' = [for (item, i) in virtualMachines: {
   name: 'lab04-vm'
   scope: rg[i]
   dependsOn: [
@@ -137,7 +153,6 @@ module lab03_vms 'modules/lab04-vms.bicep' = [for (item, i) in virtualMachines: 
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
     vmCount: 1
-    path: item.path
   }
 }]
 

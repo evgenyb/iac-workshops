@@ -7,25 +7,27 @@ Azure Application Gateway is a Level 7 load balancer that enables you to manage 
 
 ## Task #1 - create an Azure Application Gateway to load balance four Virtual Machines from two regions using portal
 
-In this task you will create an Azure Application Gateway to load balance four Virtual Machines from two regions using portal. We already provisioned two Virtual Machines in each region. 
+In this task you will create an Azure Application Gateway to load balance four Virtual Machines from two regions using portal. We already provisioned two Virtual Machines prefixed with `lab03-` in each region. 
 
 ![img](images/lab3-1.png)
 
-We will need private IP addresses of these VMs to configure Application Gateway. You can either find them the portal, or use Azure CLI:
+We will need private IP addresses of these VMs to configure Application Gateway. You can either find them the portal, or use Azure CLI.
+
+> Note! you will most likely get different IP addresses for your VMs!
 
 ```powershell
 # Get private IP addresses of VMs
-az vm list-ip-addresses -g iac-ws2-norwayeast-rg --query "[?contains(virtualMachine.name, 'lab02-')].{ip:virtualMachine.network.privateIpAddresses[0], vmName:virtualMachine.name}" -otable
+az vm list-ip-addresses -g iac-ws2-norwayeast-rg --query "[?contains(virtualMachine.name, 'lab03-')].{ip:virtualMachine.network.privateIpAddresses[0], vmName:virtualMachine.name}" -o table
 Ip         VmName
 ---------  -------------
-10.10.0.6  lab02-vm-no-0
-10.10.0.5  lab02-vm-no-1
+10.10.0.6  lab03-vm-no-0
+10.10.0.5  lab03-vm-no-1
 
-az vm list-ip-addresses -g iac-ws2-eastus-rg --query "[?contains(virtualMachine.name, 'lab02-')].{ip:virtualMachine.network.privateIpAddresses[0], vmName:virtualMachine.name}" -otable
+az vm list-ip-addresses -g iac-ws2-eastus-rg --query "[?contains(virtualMachine.name, 'lab03-')].{ip:virtualMachine.network.privateIpAddresses[0], vmName:virtualMachine.name}" -o table
 Ip         VmName
 ---------  -------------
-10.20.0.5  lab02-vm-us-0
-10.20.0.6  lab02-vm-us-1
+10.20.0.5  lab03-vm-us-0
+10.20.0.6  lab03-vm-us-1
 ```
 
 During the creation of the Application Gateway, you'll configure:
@@ -79,16 +81,43 @@ At the `Add backend pool` page, fill in the following values:
 
 | Name | Value |
 | --- | --- |
-| Name | Enter `VirtualMachines` |
+| Name | Enter `all-vms` |
 | Add backend pool without targets | Select `No` |
 
-At the `Backend targets`, add four IP private addresses for our VMs. Use `IP address or FQDN` as a `Target type`
+At the `Backend targets`, add four IP private addresses for our VMs. Use `IP address or FQDN` as a `Target type`.
 
 ![img](images/6.png)
 
-Click `Add` when finished and from the `Backends` tab click `Next: Configuration >`
+Click `Add` when finished. 
 
-At the `Configuration` tab, make sure that there is one frontend with `iac-ws2-agw-pip` public IP address and one backend with `VirtualMachines` backend pool. Click `+ Add a routing rule`.
+Add new backend pool with the following values:
+
+| Name | Value |
+| --- | --- |
+| Name | Enter `images` |
+| Add backend pool without targets | Select `No` |
+
+At the `Backend targets`, add two IP private addresses for VMs from `norwayeast` region. Use `IP address or FQDN` as a `Target type`.
+
+![img](images/6-1.png)
+
+Add new backend pool with the following values:
+
+| Name | Value |
+| --- | --- |
+| Name | Enter `videos` |
+| Add backend pool without targets | Select `No` |
+
+At the `Backend targets`, add two IP private addresses for VMs from `eastus` region. Use `IP address or FQDN` as a `Target type`.
+
+![img](images/6-2.png)
+
+At this point, you should have three backend pools: `all-vm`, `images` and `videos`. 
+From the `Backends` tab click `Next: Configuration >`
+
+![img](images/6-3.png)
+
+At the `Configuration` tab, make sure that there is one frontend with `iac-ws2-agw-pip` public IP address and three backend pools. Click `+ Add a routing rule`.
 
 ![img](images/7.png)
 
@@ -133,6 +162,39 @@ From the `Add a routing rule` page click `Add multiple targets to create a path-
 
 ![img](images/11.png)
 
+At the `Add a path` page fill in the following values:
+
+| Name | Value |
+| --- | --- |
+| Target type | Select `Backend pool` |
+| Path | Enter `/images/*` |
+| Target name | Enter `images` |
+| Backend settings | Select  `http-settings` |
+| Backend target | Select `images` |
+
+![img](images/11-1.png)
+
+Click `Add` when done.
+
+Add new rule by clicking at `Add multiple targets to create a path-based rule` and at the `Add a path` page fill in the following values:
+
+| Name | Value |
+| --- | --- |
+| Target type | Select `Backend pool` |
+| Path | Enter `/videos/*` |
+| Target name | Enter `videos` |
+| Backend settings | Select  `http-settings` |
+| Backend target | Select `videos` |
+
+![img](images/11-2.png)
+
+Click `Add` when done.
+
+At the `Add routing rule` page click `Add`.
+
+![img](images/12.png)
+
+At the `Create application gateway` page click `Next: Tags >` then `Next: Review + create >` and finally `Create`.
 
 
 ## new listener, 2 new pools no and us. new rule that orchestrates traffic /no /en
