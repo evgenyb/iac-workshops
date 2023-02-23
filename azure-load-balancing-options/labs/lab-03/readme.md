@@ -194,7 +194,34 @@ At the `Add routing rule` page click `Add`.
 
 ![img](images/12.png)
 
-At the `Create application gateway` page click `Next: Tags >` then `Next: Review + create >` and finally `Create`.
+At the `Create application gateway` page click `Next: Tags >` then `Next: Review + create >` and finally `Create`. 
+It will take a few minutes to create the Application Gateway.
+
+
+## Task #2 - test Application Gateway
+
+Now let's test our Application Gateway. We need to get the public IP address of the Application Gateway first. You can find it at the Application Gateway Overview page at the portal.
+
+![img](images/14.png)
+
+Or you can use `az cli` to get the public IP address of the Application Gateway.
+
+```powershell
+# get public ip address of application gateway
+az network public-ip show -n iac-ws2-agw-pip -g iac-ws2-rg  --query ipAddress -otsv
+```
+Now, let's use curl to test application gateway. 
+
+```powershell   
+# get public ip address of application gateway
+$agwpip=(az network public-ip show -n iac-ws2-agw-pip -g iac-ws2-rg  --query ipAddress -otsv)
+
+# test app gateway
+curl http://$agwpip
+lab03-vm-no-0
+``` 
+
+If you run `curl` command several times, you'll see that the response is coming from different VMs...
 
 
 ## new listener, 2 new pools no and us. new rule that orchestrates traffic /no /en
