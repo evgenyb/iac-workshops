@@ -230,7 +230,7 @@ At the `Add outbound rule` page fill the following:
 
 | Field | Value |
 | --- | --- |
-| Name | Enter `outbound-rule1` |
+| Name | Enter `out-rule1` |
 | IP Version | Select `IPv4` |
 | Frontend IP address | Select `frontend` |
 | Protocol | Select `TCP` |
@@ -251,19 +251,54 @@ Now, go back to the `iac-ws2-norwayeast-vm0` and try to navigate to https://www.
 ![img](images/task5-5.png)
 
 
-## Task #3 - monitor Azure Load Balancer with Insights
+> Note! Microsoft suggests that `Azure Virtual Network NAT` is the recommended configuration for outbound connectivity in production deployments. For more information about Virtual Network NAT and the NAT gateway resource, see [What is Azure Virtual Network NAT](https://learn.microsoft.com/en-us/azure/virtual-network/nat-gateway/nat-overview)?. `Azure Virtual Network NAT` is outside of the scope of this workshop.
 
-* walk through the ALB Insights dashboard
-* walk through the ALB Insights metrics
-* stop one of the VMs and see how the load balancer reacts
-* Azure Load Balancer metrics    
+
+## Task #5 - monitor Azure Load Balancer with Insights
+
+Azure Load Balancer Insights is a new feature that provides visibility into the health and performance of your load balancer. It provides a single pane of glass to monitor the health of your load balancer and the backend instances. It also provides insights into the performance of your load balancer and the backend instances.
+
+Let's see how it works. Navigate to the `iac-ws2-norwayeast-alb` load balancer and open `Insights` tab.
+
+The `Insights` tab provides a visual representation of the functional dependencies between the load balancer and the backend instances. It shows rules, health of the load balancer and the backend instances. 
+
+![img](images/task6-1.png)
+
+If you click on `View metrics`, it will the performance of the load balancer and the backend instances.
+
+![img](images/task6-2.png)
+
+> Note, that by default every time you open `Insights` tab, it will show you the last 24 hours of data. You can change the time range using the `Time Range` dropdown.
+
+Click `View detailed metrics ` from the main `Insights` view to get detailed metrics for the load balancer and the backend instances.
+
+![img](images/task6-3.png)
+
+Detailed metrics are split into the following sections:
+
+* Overview
+* Frontend & Backend Availability
+* Data Throughput
+* Flow Distribution
+* Connection Monitors
+* Metric Definitions
+
+Go through each section and see what metrics are available. 
+
+Here is a [very good video from Azure Fridays](https://www.youtube.com/watch?v=qfzOTNKYTgU) that explains in details how to use Azure Load Balancer Insights.
 
 ## Links
 
+* [What is Azure Load Balancer?](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview)
+* [Azure Load Balancer Deep Dive](https://www.youtube.com/watch?v=wJvmXM81tEI)
 * [Quickstart: Create a public load balancer to load balance VMs using the Azure portal](https://learn.microsoft.com/en-us/azure/load-balancer/quickstart-load-balancer-standard-public-portal)
 * [Backend pool management](https://learn.microsoft.com/en-us/azure/load-balancer/backend-pool-management)
 * [Outbound rules Azure Load Balancer](https://learn.microsoft.com/en-us/azure/load-balancer/outbound-rules)
+* [Outbound-only load balancer configuration](https://learn.microsoft.com/en-us/azure/load-balancer/egress-only)
+* [Using Insights to monitor and configure your Azure Load Balancer](https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-insights)
 * [Monitoring load balancer](https://learn.microsoft.com/en-us/azure/load-balancer/monitor-load-balancer)
+* [Azure Load Balancer insights using Azure Monitor for Networks | Azure Friday](https://www.youtube.com/watch?v=qfzOTNKYTgU)
+* [Azure security baseline for Azure Load Balancer](https://learn.microsoft.com/en-us/security/benchmark/azure/baselines/azure-load-balancer-security-baseline)
 
 ## Next
 [Go to lab-03](../lab-03/readme.md)
