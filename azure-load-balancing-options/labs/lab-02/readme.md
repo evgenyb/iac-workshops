@@ -1,8 +1,9 @@
 # lab-02 - working with Azure Load Balancer
 
 Azure Load Balancer operates at layer 4 of the Open Systems Interconnection (OSI) model. It's the single point of contact for clients. Load balancer distributes inbound flows that arrive at the load balancer's front end to backend pool instances. These flows are according to configured load-balancing rules and health probes. The backend pool instances can be Azure Virtual Machines or instances in a Virtual Machine Scale Set. We will be using Virtual Machines during this lab.
-* Azure load balancer supports two types of load balancing: `Basic` and `Standard`. We will be using `Standard` load balancer during this lab.
-* Azure load balancer can be Internet-facing (aka Public) or internal. We will be using Public load balancer during this lab.
+
+* Azure load balancer supports two sku: `Basic` and `Standard`. We will be using `Standard` load balancer during this lab.
+* Azure load balancer can be Internet-facing (aka Public) or internal. We will be working with `Public` load balancer during this lab.
 
 A public load balancer can provide outbound connections for virtual machines (VMs) inside your virtual network. These connections are accomplished by translating their private IP addresses to public IP addresses. Public Load Balancers are used to load balance internet traffic to your VMs.
 
