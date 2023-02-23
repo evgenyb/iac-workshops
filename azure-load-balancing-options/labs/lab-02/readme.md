@@ -32,7 +32,7 @@ At the portal, search for ``Load Balancer``
 
 ![1](images/1.png)
 
- In the `Load balancing` page, make sure that `Load Balancer` tab is selected and click `Create`.
+In the `Load balancing` page, make sure that `Load Balancer` tab is selected and click `Create`.
 ![1](images/2.png)
 
 In the `Basics` tab fill the following information:
