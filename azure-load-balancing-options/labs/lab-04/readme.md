@@ -1,22 +1,16 @@
 # lab-04 - working with Azure Traffic Manager
 
-## AGW with VMs 
+## Performance
 
-```powershell
-$resourceGroupName = 'iac-ws2-lab04-rg'
+## Priority
 
-# Create Resource Group
-az group create -n $resourceGroupName -l norwayeast
+## Weighted
 
-# Deploy workload
-az deployment group create -g $resourceGroupName --template-file template.bicep -n lab-04
-```
-
-> Deployment takes approx. xx min.
 
 ## Links
 
 * [What is Traffic Manager?](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)
+* [Traffic Manager routing methods](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods)
 * [Tutorial: Improve website response using Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/tutorial-traffic-manager-improve-website-response)
 
 ## Next

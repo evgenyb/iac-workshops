@@ -24,8 +24,6 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         name: 'agw-snet'
         properties: {
           addressPrefix: vnetConfig.agwSubnetPrefix
-          privateEndpointNetworkPolicies: 'Enabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
         }
       }    
     ]

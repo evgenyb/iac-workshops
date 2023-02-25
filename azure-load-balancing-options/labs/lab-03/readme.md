@@ -197,6 +197,13 @@ At the `Add routing rule` page click `Add`.
 At the `Create application gateway` page click `Next: Tags >` then `Next: Review + create >` and finally `Create`. 
 It will take a few minutes to create the Application Gateway.
 
+Now, let's go through what have we done :) 
+
+1. We've created a new instance of Application Gateway.
+2. We've configured Application Gateway frontend and assigned Public IP address to it.
+3. We've created HTTP listener and assigned it to the frontend.
+4. We've created three backend pools: `all-vms` containing all four VMs from both regions, `images` containing VMs from `norwayeast` region and `videos` containing VMs from `eastus` region.
+5. We've created new path-based rule which by default load balances traffic between all VMs, routes traffic to `images` backend pool for requests with `/images/*` path and routes traffic to `videos` backend pool for requests with `/videos/*` path.
 
 ## Task #2 - test Application Gateway
 
@@ -204,13 +211,13 @@ Now let's test our Application Gateway. We need to get the public IP address of 
 
 ![img](images/14.png)
 
-Or you can use `az cli` to get the public IP address of the Application Gateway.
+Or, you can use `az cli` to get the public IP address of the Application Gateway.
 
 ```powershell
 # get public ip address of application gateway
 az network public-ip show -n iac-ws2-agw-pip -g iac-ws2-rg  --query ipAddress -otsv
 ```
-Now, let's use curl to test application gateway. 
+Now, let's use `curl` to test application gateway. 
 
 ```powershell   
 # get public ip address of application gateway
@@ -221,12 +228,102 @@ curl http://$agwpip
 lab03-vm-no-0
 ``` 
 
-If you run `curl` command several times, you'll see that the response is coming from different VMs...
+If you run `curl` command several times, you'll see that the response is coming from all four VMs...
 
+Now let's test `/images/*` rule.
 
-## new listener, 2 new pools no and us. new rule that orchestrates traffic /no /en
+```powershell
+# Test /images/* rule
+curl http://$agwpip/images/test.htm
+Images: lab03-vm-no-1
+```
 
-## read headers and redirect traffic to pools
+Run this command several times and you'll see that the responses are only coming from `norwayeast` VMs.
+
+Now let's test `/videos/*` rule.
+```powershell
+# Test /videos/* rule
+curl http://$agwpip/videos/test.htm
+Videos: lab03-vm-us-0
+```
+
+Run this command several times and you'll see that the responses are only coming from `eastus` VMs.
+
+## Task #3 - rewrite url based on request header content
+
+Sometimes you need to rewrite the URL based on the request header content. One of such use-cases is `blue-green` testing. In this scenario, you have two versions of the same application running in parallel. You can use Application Gateway to route traffic to the `blue` or active/current version of the application by default and to the `green` or new version of the application if the request header contains come predefined value. Then you can configure clients that are used for testing to send requests with the predefined header value. This way you can test the new version of the application without affecting the production traffic.
+
+Let's create new Rewrite rule which will rewrite the URL based on the request header content. 
+Navigate to `iac-ws2-agw` Application gateway and open `Rewrite` tab under `Settings` and click `+ Rewrite set`.	
+
+![img](images/15.png)
+
+At the `Create rewrite set` page under `Name and Associations` fill in the following values:
+
+| Name | Value |
+| --- | --- |
+| Name | Enter `rewrite-for-testing` |
+| Routing rule/paths | Select `rule1` |
+
+Click `Next`.
+
+![img](images/16.png)
+
+At the `Rewrite rule configuration` click `Add rewrite rule`.
+
+![img](images/17.png)
+
+At the next page set `Rewrite rule name` to `testing` and click `Add condition.` After that you should see both condition and action sections.
+
+![img](images/18.png)
+
+Click `Click to configure this condition` and at the `condition` page fill in the following values:
+
+| Name | Value |
+| --- | --- |
+| Type of variable to check | Keep `HTTP header` |
+| Header type | Select `Request header` |
+| Header name | Select `Custom header` |
+| Custom header | Enter `x-is-for-testing` |
+| Case-sensitive | Keep `No` |
+| Operator | Select `Equal (=)` |
+| Pattern to match | Enter `true` |
+
+![img](images/19.png)
+
+Click `Ok` and then click `Click to configure this action` and at the `action` page fill in the following values:
+
+| Name | Value |
+| --- | --- |
+| Rewrite type | Select `URL` |
+| Action type | Select `Set` |
+| Components | Select `URL path` |
+| URL path Value | Enter `/images/test.htm` |
+
+Check `Re-evaluate path map` on and click `Ok`.
+
+![img](images/20.png)
+
+When all this done your page should look like this:
+
+![img](images/21.png)
+
+Click `Create` and when changes are saved, let's test them out.
+
+```powershell   
+# get public ip address of application gateway
+$agwpip=(az network public-ip show -n iac-ws2-agw-pip -g iac-ws2-rg  --query ipAddress -otsv)
+
+# test app gateway
+curl http://$agwpip
+lab03-vm-no-0
+
+# test app gateway with x-is-for-testing header
+curl -H "x-is-for-testing: true" http://$agwpip
+Images: lab03-vm-no-1
+```
+
+As you can see, with the `x-is-for-testing` header set to `true` the response is coming from `/images/test.htm` path. 
 
 ## enrich response with new headers
 
