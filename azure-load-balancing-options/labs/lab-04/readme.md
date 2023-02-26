@@ -166,6 +166,13 @@ When stopped, run the same `curl` command again and you should receive `lab04-vm
 curl http://iac-ws2-priority-tfm.trafficmanager.net
 ```
 
+Start `lab04-vm-no-0` VM again as we will need it in next tasks.
+
+```powershell	
+# Start lab04-vm-no-0 VM
+az vm start --name lab04-vm-no-0 --resource-group iac-ws2-norwayeast-rg
+```
+
 ## Weighted
 
 
