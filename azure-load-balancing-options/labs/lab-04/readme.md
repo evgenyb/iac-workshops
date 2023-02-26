@@ -36,13 +36,13 @@ Now, let's add two endpoints to the traffic manager profile. We will be using tw
 # Get public IP resource id associated with lab04-vm-no-0 VM
 $vmNoPipResourceId=(az network public-ip show --name lab04-vm-no-pip-0 --resource-group iac-ws2-norwayeast-rg --query id -otsv)
 
-# Add endpoints to the traffic manager profile
+# Add lab04-vm-no-0 VM as endpoint to the traffic manager profile
 az network traffic-manager endpoint create --name lab04-vm-no-0 --profile-name iac-ws2-performance-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmNoPipResourceId --endpoint-status Enabled
 
 # Get public IP resource id associated with lab04-vm-us-0 VM
 $vmUsPipResourceId=(az network public-ip show --name lab04-vm-us-pip-0 --resource-group iac-ws2-eastus-rg --query id -otsv)
 
-# Add endpoints to the traffic manager profile
+# Add lab04-vm-us-0 VM as endpoint to the traffic manager profile
 az network traffic-manager endpoint create --name lab04-vm-us-0 --profile-name iac-ws2-performance-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmUsPipResourceId --endpoint-status Enabled
 
 # Get all endpoints associated with the traffic manager profile
@@ -91,11 +91,80 @@ Keep remote connection active for both test VMs and stop `lab04-vm-no-0` VM.
 # Stop lab04-vm-no-0 VM
 az vm stop --name lab04-vm-no-0 --resource-group iac-ws2-norwayeast-rg
 ```
-When stopped, go back to both test VMs and re-run connectivity command again. You should receive `lab04-vm-us-0` at both test VMs, because now traffic manager is falling back to only one endpoint available (`lab04-vm-us-0`).
+
+When stopped, go back to both test VMs and re-run connectivity command again. 
+
+> Note. It might take some time for traffic manager to detect that the endpoint is down. Wait a few minutes and try again.
+
+You should receive `lab04-vm-us-0` at both test VMs, because now traffic manager is falling back to only one endpoint available (`lab04-vm-us-0`).
+
+Now, let's start `lab04-vm-no-0` VM again as we will need it in next tasks.
+
+```powershell	
+# Start lab04-vm-no-0 VM
+az vm start --name lab04-vm-no-0 --resource-group iac-ws2-norwayeast-rg
+```
+
+## Task #2 - create a Traffic Manager profile with Priority routing method
+
+Often you want to provide reliability for your services. To do so, you deploy one or more backup services in case the primary goes down. The 'Priority' traffic-routing method allows to easily implement this failover pattern.
+
+![Priority](https://learn.microsoft.com/en-us/azure/traffic-manager/media/traffic-manager-routing-methods/priority.png)
 
 
+First, create a traffic manager profile with Priority routing using the following command:
 
-## Priority
+```powershell
+# Check dns name availability
+ az network traffic-manager profile check-dns --name iac-ws2-priority-tfm --query nameAvailable -otsv
+
+# If true, create a traffic manager profile with priority routing
+az network traffic-manager profile create --name iac-ws2-priority-tfm --resource-group iac-ws2-rg --routing-method Priority --unique-dns-name iac-ws2-priority-tfm --ttl 30
+```
+
+If `check-dns` command returns false, then you need to choose a different name for your traffic manager profile, because the name you chose is already taken. 
+
+Now, let's add two endpoints to the traffic manager profile. As at the previous task, we will be using two Virtual Machines `lab04-vm-no-0` and `lab04-vm-us-0`. 
+
+```powershell
+# Get public IP resource id associated with lab04-vm-no-0 VM
+$vmNoPipResourceId=(az network public-ip show --name lab04-vm-no-pip-0 --resource-group iac-ws2-norwayeast-rg --query id -otsv)
+
+# Add lab04-vm-no-0 VM as endpoint to the traffic manager profile with priority 1
+az network traffic-manager endpoint create --name lab04-vm-no-0 --profile-name iac-ws2-priority-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmNoPipResourceId --priority 1 --endpoint-status Enabled
+
+# Get public IP resource id associated with lab04-vm-us-0 VM
+$vmUsPipResourceId=(az network public-ip show --name lab04-vm-us-pip-0 --resource-group iac-ws2-eastus-rg --query id -otsv)
+
+# Add lab04-vm-us-0 VM as endpoint to the traffic manager profile with priority 2
+az network traffic-manager endpoint create --name lab04-vm-us-0 --profile-name iac-ws2-priority-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmUsPipResourceId --priority 2 --endpoint-status Enabled
+
+# Get all endpoints associated with the traffic manager profile
+az network traffic-manager endpoint list --profile-name iac-ws2-priority-tfm --resource-group iac-ws2-rg --query "[].{name:name, status:endpointStatus, priority:priority}" -o table
+```
+
+To test this type of traffic manager profile, we don't need to use test VMS. We can use `curl` command from our local machine. If you run this command from your local machine, you should receive `lab04-vm-no-0` as a result, because it has higher priority.
+
+```powershell
+# Test connectivity to the traffic manager profile
+curl http://iac-ws2-priority-tfm.trafficmanager.net
+```
+
+Now, stop the `lab04-vm-no-0` VM.
+    
+```powershell
+# Stop lab04-vm-no-0 VM
+az vm stop --name lab04-vm-no-0 --resource-group iac-ws2-norwayeast-rg
+```
+
+When stopped, run the same `curl` command again and you should receive `lab04-vm-us-0` as a result, because `lab04-vm-no-0` VM is down and `lab04-vm-us-0` is next high priority. 
+
+> Note. It might take some time for traffic manager to detect that the endpoint is down. Wait a few minutes and try again.
+
+```powershell
+# Test connectivity to the traffic manager profile
+curl http://iac-ws2-priority-tfm.trafficmanager.net
+```
 
 ## Weighted
 
