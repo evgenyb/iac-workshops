@@ -28,7 +28,7 @@ First, create a traffic manager profile with performance routing using the follo
 az network traffic-manager profile create --name iac-ws2-performance-tfm --resource-group iac-ws2-rg --routing-method Performance --unique-dns-name iac-ws2-performance-tfm --ttl 30
 ```
 
-If `check-dns` command returns false, then you need to choose a different name for your traffic manager profile, because the name you chose is already taken. 
+If `check-dns` command returns false, then you need to choose a different `--unique-dns-name` for your traffic manager profile, because the name you chose is already taken. You can still use `iac-ws2-performance-tfm` as traffic manager profile name (`--name` parameter). 
 
 Now, let's add two endpoints to the traffic manager profile. We will be using two Virtual Machines `lab04-vm-no-0` and `lab04-vm-us-0`. They are located in different regions and both have Public IP addresses and therefore can be used as endpoints for the traffic manager profile. 
 
@@ -77,7 +77,7 @@ When at the `testvm-no`, start `Powershell` and run the following command:
 
 ```powershell
 # Test connectivity to the traffic manager profile  
-(Invoke-WebRequest -Uri http://iac-ws2-performance-tfm.trafficmanager.net).Content
+curl http://performance_fraffic_manager_url
 lab04-vm-no-0
 ```
 
@@ -122,7 +122,7 @@ First, create a traffic manager profile with Priority routing using the followin
 az network traffic-manager profile create --name iac-ws2-priority-tfm --resource-group iac-ws2-rg --routing-method Priority --unique-dns-name iac-ws2-priority-tfm --ttl 30
 ```
 
-If `check-dns` command returns false, then you need to choose a different name for your traffic manager profile, because the name you chose is already taken. 
+If `check-dns` command returns false, then you need to choose a different `--unique-dns-name` for your traffic manager profile, because the name you chose is already taken. You can still use `iac-ws2-priority-tfm` as traffic manager profile name (`--name` parameter). 
 
 Now, let's add two endpoints to the traffic manager profile. As at the previous task, we will be using two Virtual Machines `lab04-vm-no-0` and `lab04-vm-us-0`. 
 
@@ -143,11 +143,17 @@ az network traffic-manager endpoint create --name lab04-vm-us-0 --profile-name i
 az network traffic-manager endpoint list --profile-name iac-ws2-priority-tfm --resource-group iac-ws2-rg --query "[].{name:name, status:endpointStatus, priority:priority}" -o table
 ```
 
-To test this type of traffic manager profile, we don't need to use test VMS. We can use `curl` command from our local machine. If you run this command from your local machine, you should receive `lab04-vm-no-0` as a result, because it has higher priority.
+To test this type of traffic manager profile, we don't need to use test VMs. We can use `curl` command from our local machine. If you run this command from your local machine, you should receive `lab04-vm-no-0` as a result, because it has higher priority.
 
 ```powershell
+# Get Traffic Manager profile URL
+$priorityTrafficManagerUrl = (az network traffic-manager profile show --name iac-ws2-performance-tfm --resource-group iac-ws2-rg --query dnsConfig.fqdn -otsv)
+
+# Print Traffic Manager profile URL
+echo $priorityTrafficManagerUrl
+
 # Test connectivity to the traffic manager profile
-curl http://iac-ws2-priority-tfm.trafficmanager.net
+curl http://$priorityTrafficManagerUrl
 ```
 
 Now, stop the `lab04-vm-no-0` VM.
@@ -163,7 +169,7 @@ When stopped, run the same `curl` command again and you should receive `lab04-vm
 
 ```powershell
 # Test connectivity to the traffic manager profile
-curl http://iac-ws2-priority-tfm.trafficmanager.net
+curl http://$priorityTrafficManagerUrl
 ```
 
 Start `lab04-vm-no-0` VM again as we will need it in next tasks.
@@ -173,15 +179,77 @@ Start `lab04-vm-no-0` VM again as we will need it in next tasks.
 az vm start --name lab04-vm-no-0 --resource-group iac-ws2-norwayeast-rg
 ```
 
-## Weighted
+## Task #3 - create a Traffic Manager profile with Weighted routing method
+The 'Weighted' traffic-routing method allows you to distribute traffic between endpoints with a pre-defined weighting.
+In the Weighted traffic-routing method, you assign a weight to each endpoint in the Traffic Manager profile configuration. The weight is an integer from 1 to 1000.  The higher weight, the higher the priority. For each DNS query received, Traffic Manager randomly chooses an available endpoint. The probability of choosing an endpoint is based on the weights assigned to all available endpoints. Using the same weight across all endpoints results in an even traffic distribution. 
 
+![Weighted](https://learn.microsoft.com/en-us/azure/traffic-manager/media/traffic-manager-routing-methods/weighted.png)
 
+Create a traffic manager profile with Weighted routing using the following command:
+
+```powershell
+# Check dns name availability
+az network traffic-manager profile check-dns --name iac-ws2-weighted-tfm --query nameAvailable -otsv
+
+# If true, create a traffic manager profile with priority routing
+az network traffic-manager profile create --name iac-ws2-weighted-tfm --resource-group iac-ws2-rg --routing-method Weighted --unique-dns-name iac-ws2-weighted-tfm --ttl 30
+```
+
+If `check-dns` command returns false, then you need to choose a different `--unique-dns-name` for your traffic manager profile, because the name you chose is already taken. You can still use `iac-ws2-weighted-tfm` as traffic manager profile name (`--name` parameter). 
+
+Now, let's add two endpoints to the traffic manager profile. As at the previous task, we will be using two Virtual Machines `lab04-vm-no-0` and `lab04-vm-us-0`. 
+
+```powershell
+# Get public IP resource id associated with lab04-vm-no-0 VM
+$vmNoPipResourceId=(az network public-ip show --name lab04-vm-no-pip-0 --resource-group iac-ws2-norwayeast-rg --query id -otsv)
+
+# Add lab04-vm-no-0 VM as endpoint to the traffic manager profile with priority 1
+az network traffic-manager endpoint create --name lab04-vm-no-0 --profile-name iac-ws2-weighted-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmNoPipResourceId --weight 90 --endpoint-status Enabled
+
+# Get public IP resource id associated with lab04-vm-us-0 VM
+$vmUsPipResourceId=(az network public-ip show --name lab04-vm-us-pip-0 --resource-group iac-ws2-eastus-rg --query id -otsv)
+
+# Add lab04-vm-us-0 VM as endpoint to the traffic manager profile with priority 2
+az network traffic-manager endpoint create --name lab04-vm-us-0 --profile-name iac-ws2-weighted-tfm --resource-group iac-ws2-rg --type azureEndpoints --target-resource-id $vmUsPipResourceId --weight 10 --endpoint-status Enabled
+
+# Get all endpoints associated with the traffic manager profile
+az network traffic-manager endpoint list --profile-name iac-ws2-weighted-tfm --resource-group iac-ws2-rg --query "[].{name:name, status:endpointStatus, weight:weight}" -o table
+```
+
+Get traffic manager profile URL
+
+```powershell
+# Get Traffic Manager profile URL
+az network traffic-manager profile show --name iac-ws2-weighted-tfm --resource-group iac-ws2-rg --query dnsConfig.fqdn -otsv
+```	
+
+Now, let's test the traffic manager profile. I made a simple script that will send request to Traffic Manager, analyses the response, count the number of requests to each endpoint and print the results after each 100 requests. 
+
+```powershell
+# Test Traffic Manager 
+./weighted-tfm-test.ps1
+no: 6394, us: 206
+no: 6494, us: 206
+no: 6594, us: 206
+no: 6694, us: 206
+no: 6794, us: 206
+no: 6894, us: 206
+no: 6994, us: 206
+no: 7094, us: 206
+no: 7194, us: 206
+no: 7294, us: 206
+```
+
+You can play with endpoint weights and see how it affects the traffic distribution.
+
+##  Task #4 - work with nested Traffic Manager profiles
 ## Links
 
 * [What is Traffic Manager?](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)
 * [Traffic Manager routing methods](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods)
 * [Tutorial: Improve website response using Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/tutorial-traffic-manager-improve-website-response)
 * [Nested Traffic Manager profiles](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-nested-profiles)
+* [How Traffic Manager Works](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-how-it-works)
 
 ## Next
 [Go to lab-05](../lab-05/readme.md)
