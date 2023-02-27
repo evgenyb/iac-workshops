@@ -19,7 +19,7 @@ Next, we'll create an endpoint - a logical grouping of one or more routes that a
 
 ```powershell	
 # Create a Front Door endpoint
-az afd endpoint create --endpoint-name iac-ws2-fd-endpoint --profile-name iac-ws2-fd --resource-group iac-ws2-rg --origin-host-header iac-ws2-fd.azurefd.net --origin-response-timeout-seconds 60 --origin-path / --origin iac-ws2-fd.azurefd.net --custom-domain iac-ws2-fd.azurefd.net --enable-https true --https-only true --query customHttpsProvisioningState
+az afd endpoint create --endpoint-name iac-ws2-fd-endpoint --profile-name iac-ws2-fd --resource-group iac-ws2-rg --enabled-state enabled
 ```
 
 ## Lowest latencies based traffic-routing method
