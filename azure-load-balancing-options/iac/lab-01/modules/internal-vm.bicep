@@ -6,6 +6,7 @@ param adminUsername string
 param adminPassword string
 param vmName string
 param vmCount int
+param isALBPublicIPNeeded bool
 
 var networkInterfaceName = '${vmName}-nic'
 var nsgName = '${vmName}-nsg'
@@ -14,7 +15,8 @@ var vmSize  = 'Standard_B2ms'
 var azureLoadBalancerPublicIpName = '${prefix}-${location}-alb-pip'
 var azureLoadBalancerDnsName = '${prefix}-${location}-alb'
 
-resource publicIp 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
+
+resource publicIp 'Microsoft.Network/publicIPAddresses@2022-07-01' = if(isALBPublicIPNeeded) {
   name: azureLoadBalancerPublicIpName
   location: location
   sku: {
@@ -139,7 +141,6 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-1
     }
   }
 }]
-
 
 resource windowsAgents 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = [for i in range(0, vmCount): {
   name: 'AzureMonitorWindowsAgent'

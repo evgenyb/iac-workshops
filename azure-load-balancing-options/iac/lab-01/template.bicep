@@ -120,6 +120,7 @@ module lab02_vms 'modules/internal-vm.bicep' = [for (item, i) in virtualMachines
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
     vmCount: item.vmCount
+    isALBPublicIPNeeded: true
   }
 }]
 
@@ -137,6 +138,7 @@ module lab03_vms 'modules/internal-vm.bicep' = [for (item, i) in virtualMachines
     adminPassword: secretsKV.getSecret(vmAdminPasswordSecretName)    
     subnetId: vnets[i].outputs.workloadSubnetId
     vmCount: item.vmCount
+    isALBPublicIPNeeded: false
   }
 }]
 
