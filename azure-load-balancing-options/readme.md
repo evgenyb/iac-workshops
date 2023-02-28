@@ -16,12 +16,12 @@ and many many more...
  
 * Welcome + practical information
 * [Slides] - Load-balancing options on Azure
-* Lab-01 - provision workshop infrastructure
-* Lab-02 - working with Azure Load Balancer
-* Lab-03 - working with Azure Application Gateway
-* Lab-04 - working with Azure Traffic Manager
-* Lab-05 - working with Azure Front Door
-* Lab-06 - cleaning up resources
+* [Lab-01](labs/lab-01/readme.md) - provision workshop infrastructure
+* [Lab-02](labs/lab-02/readme.md) - working with Azure Load Balancer
+* [Lab-03](labs/lab-03/readme.md) - working with Azure Application Gateway
+* [Lab-04](labs/lab-04/readme.md) - working with Azure Traffic Manager
+* [Lab-05](labs/lab-05/readme.md) - working with Azure Front Door
+* [Lab-06](labs/lab-06/readme.md) - cleaning up resources
   
 ## Links
 
