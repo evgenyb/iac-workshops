@@ -242,7 +242,6 @@ no: 7294, us: 206
 
 You can play with endpoint weights and see how it affects the traffic distribution.
 
-##  Task #4 - work with nested Traffic Manager profiles
 ## Links
 
 * [What is Traffic Manager?](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)
