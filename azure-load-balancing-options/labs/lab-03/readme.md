@@ -325,25 +325,16 @@ Images: lab03-vm-no-1
 
 As you can see, with the `x-is-for-testing` header set to `true` the response is coming from `/images/test.htm` path. 
 
-## enrich response with new headers
+## Task #4 (Optional) - add new listener at port 8080 and create basic routing rule to send traffic to `all-vm` backend pool
+
 
 ## Links
 
 * [What is Azure Application Gateway?](https://learn.microsoft.com/en-us/azure/application-gateway/overview)
 * [Application gateway components](https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-components)
 * [Azure Well-Architected Framework review - Azure Application Gateway v2](https://learn.microsoft.com/en-us/azure/architecture/framework/services/networking/azure-application-gateway)
-
-
-https://learn.microsoft.com/en-us/azure/application-gateway/how-application-gateway-works
-
-routing rules
-https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-components#request-routing-rules
-https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview
-
-https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-bicep?tabs=CLI
-
-https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
-https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-portal
+* [How an application gateway works](https://learn.microsoft.com/en-us/azure/application-gateway/how-application-gateway-works)
+* [Request routing rules](https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-components#request-routing-rules)
 
 ## Next
 [Go to lab-04](../lab-04/readme.md)
