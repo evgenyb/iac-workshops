@@ -135,7 +135,7 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2022-1
     typeHandlerVersion: '1.10'    
     settings: {      
       fileUris: [
-        'https://raw.githubusercontent.com/evgenyb/iac-workshops/ws/alb-wip/azure-load-balancing-options/iac/lab-01/scripts/iis-${location}.ps1'
+        'https://raw.githubusercontent.com/evgenyb/iac-workshops/main/azure-load-balancing-options/iac/lab-01/scripts/iis-${location}.ps1'
       ]
       commandToExecute: 'powershell -ExecutionPolicy Bypass -File iis-${location}.ps1'
     }
