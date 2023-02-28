@@ -13,8 +13,7 @@ var nsgName = '${vmName}-nsg'
 var vmSize  = 'Standard_B2ms'
 
 var azureLoadBalancerPublicIpName = '${prefix}-${location}-alb-pip'
-var azureLoadBalancerDnsName = '${prefix}-${location}-alb'
-
+var azureLoadBalancerDnsName = '${prefix}-${location}-${uniqueString(subscription().id, resourceGroup().id)}-alb'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2022-07-01' = if(isALBPublicIPNeeded) {
   name: azureLoadBalancerPublicIpName
