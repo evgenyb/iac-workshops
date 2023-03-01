@@ -4,7 +4,7 @@ This repository contains a series of hands-on workshops covering different aspec
 
 All workshops are a combination of theoretical blocks with slides and hands-on labs. Normally, the estimated time of workshop completion is between 3 and 4 hours.
 
-## [Automate DNS and Certificate management on Azure with Azure DevOps](azure-load-balancing-options/readme.md)
+## [Automate DNS and Certificate management on Azure with Azure DevOps](dns-and-ssl-management-on-azure-with-ado/readme.md)
 
 This is level 200 workshop that covers different aspects of automating DNS and certificate management on Azure with Azure DNS Zone, `keyvault-acmebot` and Azure DevOps and you will learn: 
 
