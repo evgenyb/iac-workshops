@@ -4,6 +4,15 @@ This repository contains a series of hands-on workshops covering different aspec
 
 All workshops are a combination of theoretical blocks with slides and hands-on labs. Normally, the estimated time of workshop completion is between 3 and 4 hours.
 
+## [Automate DNS and Certificate management on Azure with Azure DevOps](azure-load-balancing-options/readme.md)
+
+This is level 200 workshop that covers different aspects of automating DNS and certificate management on Azure with Azure DNS Zone, `keyvault-acmebot` and Azure DevOps and you will learn: 
+
+* How to delegate domain to Azure DNS Zone
+* How to automate DNS records management with Azure DevOps
+* What options are available on Azure to maintain SSL certificates
+* How to automate [Let's Encrypt](https://letsencrypt.org/) certificate management with `keyvault-acmebot`
+
 ## [Load-balancing options on Azure](azure-load-balancing-options/readme.md)
 
 This is level 200 workshop that covers different aspects of working with load-balancing services on Azure where you will learn:
@@ -13,8 +22,6 @@ This is level 200 workshop that covers different aspects of working with load-ba
 * What traffic routing methods are available at Azure Front Door
 * How to implement canary releases with Azure Traffic Manager
 * How to rewrite HTTP headers and URL with Azure Application Gateway
-
-and many many more...
 
 ## [Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps](iac-with-azure-devops/readme.md)
 
@@ -26,4 +33,3 @@ This is an introduction level workshop that covers different aspects of automati
 * How to create IaC git Repository in Azure DevOps based on your Template repository
 * How to create Azure DevOps IaC deployment pipeline using `az devops` cli
 * What strategies are available to implement IaC for multi-environment workloads
-
