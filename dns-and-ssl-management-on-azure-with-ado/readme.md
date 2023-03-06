@@ -12,7 +12,11 @@ This is level 200 workshop that covers different aspects of automating DNS and c
 
 ## Agenda
  
-Work in progress. Will be updates when ready...
+* Welcome + practical information
+* [Slides] - DNS and Certificate options on Azure
+* [Lab-01](labs/lab-01/readme.md) - provision workshop infrastructure
+* [Lab-06](labs/lab-06/readme.md) - cleaning up resources
+
   
 ## Links
 
