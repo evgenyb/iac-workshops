@@ -1,0 +1,27 @@
+name: $(Build.DefinitionName)-$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+trigger:
+  branches:
+    include:
+      - main
+      - master
+  paths:
+    exclude:
+      - readme.md
+      - .gitignore
+      - azure-pipelines.yaml
+
+pool:  
+  vmImage: 'ubuntu-20.04'
+
+variables:
+  serviceConnection: $(Build.DefinitionName)-sc
+
+steps:
+- task: AzureCLI@2
+  displayName: 'Deploy workload infrastructure'
+  inputs:
+    azureSubscription: ${{ variables.serviceConnection }}
+    scriptType: pscore
+    scriptLocation: scriptPath
+    scriptPath: ./deploy.ps1
+    arguments: '-DeploymentName $(Build.BuildNumber)'

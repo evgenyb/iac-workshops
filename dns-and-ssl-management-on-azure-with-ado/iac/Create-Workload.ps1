@@ -2,7 +2,7 @@
 .SYNOPSIS
     Master script that creates new Azure Workload based on the convention 
 .EXAMPLE
-    ./Create-Workload.ps1 -WorkloadName foobar -CostCenter Dev -Owner 'James Bond' -Environment test -DevOpsProject iac -Location norwayeast 
+    ./Create-Workload.ps1 -WorkloadName foobar -CostCenter Dev -Owner 'James Bond' -DevOpsProject iac -Location norwayeast -DevOpsRepositoryDefaultBranch master
 #>
 [CmdletBinding()]
 param (
@@ -10,9 +10,6 @@ param (
     [Parameter(Mandatory = $true)]
     [String]$WorkloadName,
     # Workload environment 
-    [Parameter(Mandatory = $true)]
-    [ValidateSet('dev', 'test', 'prod')]
-    [String]$Environment,
     # CostCenter that owns the workload. 
     [Parameter(Mandatory = $true)]
     [ValidateSet('IaC', 'IT','Dev','3000')]
@@ -25,7 +22,9 @@ param (
     [String]$Location = "norwayeast",
     # Azure DevOps Project name
     [Parameter(Mandatory = $true)]
-    [String]$DevOpsProject
+    [String]$DevOpsProject,
+    [Parameter(Mandatory = $false)]
+    [String]$DevOpsRepositoryDefaultBranch = "main"
 )
 process {
     $prefix = "iac"
@@ -48,14 +47,14 @@ process {
         exit 
     }
 
-    $resourceGroupName = "$prefix-$WorkloadName-$Environment-rg"
-    $spnName = "$prefix-$WorkloadName-$Environment-iac-spn"
-    $serviceConnectionName = "$prefix-$WorkloadName-iac-$Environment-sc"
+    $resourceGroupName = "$prefix-$WorkloadName-rg"
+    $spnName = "$prefix-$WorkloadName-iac-spn"
+    $serviceConnectionName = "$prefix-$WorkloadName-iac-sc"
     $repoName = "$prefix-$WorkloadName-iac"
     $pipelineName = "$prefix-$WorkloadName-iac"
 
     Write-Host "Creating new resource group $resourceGroupName under $subscriptionName ($subscriptionId) subscription in $Location region"
-    az group create --subscription $subscriptionId -n $resourceGroupName -l $Location --tags "WorkloadName=$WorkloadName" "Environment=$Environment" "CostCenter=$CostCenter" "Owner=$Owner" --only-show-errors --output none 
+    az group create --subscription $subscriptionId -n $resourceGroupName -l $Location --tags "WorkloadName=$WorkloadName" "CostCenter=$CostCenter" "Owner=$Owner" --only-show-errors --output none 
 
     Write-Host "Check if SPN $spnName already exists"
     $spnObjectId = (az ad sp list --filter "displayName eq '$spnName'" --query [].id -otsv)
@@ -147,10 +146,10 @@ process {
             --name $pipelineName `
             --description 'Pipeline for Workload IaC deployment' `
             --repository $repoName `
-            --branch $Environment `
+            --branch $DevOpsRepositoryDefaultBranch `
             --repository-type tfsgit `
             --folder-path IaC `
-            --yaml-path azure-pipelines.yml `
+            --yaml-path azure-pipelines.yaml `
             --organization $azureDevOpsOrganization `
             --skip-first-run true `
             --project $DevOpsProject `
