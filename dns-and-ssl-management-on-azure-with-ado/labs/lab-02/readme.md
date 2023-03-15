@@ -100,19 +100,12 @@ Check the content of this file and make sure that it contains only records you w
 
 ### Import a zone file into Azure DNS Zone
 
-You can't import records from the Azure portal. You need to use `az cli`. To import a zone file for the zone `iac-lab-wip.com` I used the following command:
+You can't import records from the Azure portal. You need to use `az cli`. To import a zone file for your zone usee the following command:
 
 ```powershell
-az network dns zone import -g iac-domains-rg -n YOU-DOMAIN-NAME -f path-to/your-exported-zone-file.txt
-```
-
-So, for my case it was:
-
-```powershell
-az network dns zone import -g iac-domains-rg -n iac-lab-wip.com -f C:\Users\evgen\Downloads\iac-lab-wip.com.txt
-
-# Get the list of records
-az network dns record-set list -g iac-domains-rg -z iac-lab-wip.com
+$domain = "YOU-DOMAIN-NAME"
+$recordsFile = "path-to\exported-records-file.txt"
+az network dns zone import -g iac-domains-rg -n $domain -f $recordsFile
 ```
 
 ## Task 3 - add new DNS records to Azure DNS Zone as code
