@@ -71,7 +71,136 @@ Check resources under `iac-domains-rg` resource group and you should find new DN
 
 ![3](images/3.png)
 
-## Task #2 - (optional) migrate DNS records from registrar to Azure DNS Zone
+## Task #2 - add Azure KeyVault for certificates
+
+Create new `keyvault.bicep` file under `modules` folder with the following content:
+
+```bicep
+targetScope = 'resourceGroup'
+
+param location string = resourceGroup().location
+param keyvaultCertificatesOfficers array
+param keyVaultAdministrators array
+param tags object
+
+var kvName = 'iac-${uniqueString(subscription().id, resourceGroup().name)}-kv'
+resource kv 'Microsoft.KeyVault/vaults@2022-11-01' = {
+  name: kvName
+  location: location
+  tags: tags
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard' 
+    }
+    enabledForDeployment: true
+    enabledForDiskEncryption: true
+    enabledForTemplateDeployment: true
+    enableSoftDelete: false
+    enableRbacAuthorization: true
+    softDeleteRetentionInDays: 7
+    tenantId: subscription().tenantId
+  }
+}   
+
+var keyVaultAdministratorRoleId = '00482a5a-887f-4fb3-b363-3b7fe8e74483' // https://www.azadvertizer.net/azrolesadvertizer/00482a5a-887f-4fb3-b363-3b7fe8e74483.html
+
+resource administratorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for keyVaultAdministrator in keyVaultAdministrators: {
+  scope: kv
+  name: guid(kv.id, keyVaultAdministrator, keyVaultAdministratorRoleId)  
+  properties: {
+    principalId: keyVaultAdministrator
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultAdministratorRoleId)
+  }  
+}]
+
+var keyvaultCertificatesOfficerRoleId = 'a4417e6f-fecd-4de8-b567-7b0420556985' // https://www.azadvertizer.net/azrolesadvertizer/a4417e6f-fecd-4de8-b567-7b0420556985.html
+resource certificatesOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for officer in keyvaultCertificatesOfficers: {
+  name: guid(kv.id, officer, keyvaultCertificatesOfficerRoleId)  
+  properties: {
+    principalId: officer
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyvaultCertificatesOfficerRoleId)
+  }  
+}]
+
+output keyVaultName string = kv.name
+output keyVaultId string = kv.id
+```
+
+This file creates a new Azure KeyVault resource, assigns `Key Vault Administrator` and `Key Vault Certificate Officer` roles to the specified identities configured with two parameters:
+`keyvaultCertificatesOfficers` and `keyVaultAdministrators`. Add two new parameters into the `parameters.json` file:
+
+```json
+...
+        "keyvaultCertificatesOfficers": {
+            "value": []
+        },
+        "keyVaultAdministrators": {
+            "value": [
+                "00000000-0000-0000-0000-000000000000" // az ad signed-in-user show --query id -o tsv
+            ]
+        }        
+...        
+```
+
+Add your own user id (instead of `00000000-0000-0000-0000-000000000000`) into `keyVaultAdministrators` array. You get your user id with the following command:
+
+```powershell
+# Get signed in user id
+az ad signed-in-user show --query id -o tsv
+```
+
+We will set `keyvaultCertificatesOfficers` parameter later, so for now keep it as an empty array `[]`.
+
+Change the `deployment.bicep` file with the following content:
+
+```bicep
+targetScope = 'resourceGroup'
+
+param workloadName string
+param location string
+param buildVersion string
+param keyvaultCertificatesOfficers array
+param keyVaultAdministrators array
+
+param tags object = {
+  BuildVersion: buildVersion
+  WorkloadName: workloadName
+}
+
+module dnsZone 'modules/YOU-DOMAIN-NAME.bicep' = {
+  name: 'YOU-DOMAIN-NAME'
+  params: {
+    tags: tags
+  }
+}
+
+module kv 'modules/keyvault.bicep' = {
+  name: 'certificates-keyvault'
+  params: {
+    location: location
+    keyVaultAdministrators: keyVaultAdministrators
+    keyvaultCertificatesOfficers: keyvaultCertificatesOfficers
+    tags: tags
+  }
+}
+```
+
+and commit your changes.
+
+```powershell
+git status
+git add -A
+git commit -m "Add certificates KeyVault"
+git push
+```
+
+The pipeline should start and deploy the changes to the `iac-domains-rg` Resource Group. Check Azure DevOps pipeline and `Deployment` tab of the `iac-domains-rg` resource group.
+If pipeline is gree, you should now have a new Azure KeyVault and you should be assigned with `Key Vault Administrator` role. Check it under `Access control (IAM)` tab of the KeyVault.
+
+![7](images/7.png)
+
+## Task #3 - (optional) migrate DNS records from registrar to Azure DNS Zone
 
 You should do this task only if you have DNS records in your domain registrar and you want them to be migrated.
 
@@ -95,7 +224,7 @@ $recordsFile = "path-to\exported-records-file.txt"
 az network dns zone import -g iac-domains-rg -n $domain -f $recordsFile
 ```
 
-## Task 3 - add new DNS records to Azure DNS Zone as code
+## Task 4 - add new DNS records to Azure DNS Zone as code
 
 Let's add new A-Record for `foobar` subdomain pointing to `10.10.0.1` IP address.
 
