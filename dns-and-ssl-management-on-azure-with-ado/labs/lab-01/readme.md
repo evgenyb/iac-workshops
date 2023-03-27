@@ -3,9 +3,9 @@
 As always, we start by provisioning the infrastructure for the workshop. In this lab, we will provision the following resources:
 
 * Resource Group
-* Azure Service Principal for IaC CI/CD pipeline
+* Azure Service Principal for IaC deployment pipeline
 * New Azure DevOps repository for IaC code
-* New Azure DevOps Service Connection for CI/CD pipeline
+* New Azure DevOps Service Connection for deployment pipeline
 * New Azure DevOps pipeline for IaC deployment
 * New Azure Key Vault for certificate management
 
@@ -13,7 +13,7 @@ To learn more about how to automate Azure workload provisioning, check my [Autom
 
 ## Task #1 - provision support resources for the workshop
 
-We will be using `Create-Workload.ps1` script that we created during the [Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps workshop](https://github.com/evgenyb/iac-workshops/tree/main/iac-with-azure-devops). It requires Azure Keyvault to store Azure Service Principal credentials. So, let's provision Azure Keyvault first.
+We will be using `Create-Workload.ps1` script that we created during the [Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps workshop](https://github.com/evgenyb/iac-workshops/tree/main/iac-with-azure-devops). It requires Azure Keyvault to store Azure Service Principal credentials. Let's provision Azure Keyvault first.
 Since Azure Keyvault name has to be globally unique, we will use Bicep `uniqueString` function to generate a Key Vault name.
 
 ```powershell
@@ -31,16 +31,26 @@ This script will create the following resources:
 
 In addition it will assign you a `Key Vault Administrator` role on the newly created Key Vault, so you can manage secrets.
 
-## Task #2 - create two new workloads for domains and certificates
+## Task #2 - create two new workloads: domains and keyvault-acmebot
 
-You need to change the following variables at `Create-Workload.ps1` script:
+Before you can run `Create-Workload.ps1` script, you need to install [azure devops az cli extension](https://learn.microsoft.com/en-us/cli/azure/devops?view=azure-cli-latest) and then login to Azure DevOps with your personal access token:
+
+```powershell
+# Install Azure DevOps extension
+az extension add --name azure-devops
+
+# Login to Azure DevOps with your personal access token. You can get your personal access token from https://dev.azure.com/ifoobar/_usersSettings/tokens
+az devops login
+```
+
+Then you need to change the following variables at `Create-Workload.ps1` script:
 
 | Variable | Description |
 | --- | --- |
 | `$azureDevOpsOrganization` | Azure DevOps Organization url. For example, my organization url is https://dev.azure.com/ifoobar/  |
 | `$spnMetadataKeyvaultName` | Azure Key Vault name. You can get Azure Key Vault name from the previous step with this command: `az keyvault list -g iac-ws3-rg --query "[].name" -o tsv` |
 
-Save `Create-Workload.ps1` file and run it. Note that if your default branch is not `main`, you need to specify `-DevOpsRepositoryDefaultBranch` parameter. IN my environment, the default branch is `master`, therefore I use `-DevOpsRepositoryDefaultBranch master` parameter.
+Save `Create-Workload.ps1` file and run it. Note that if your default branch is not `main`, you need to specify `-DevOpsRepositoryDefaultBranch` parameter. In my environment, the default branch is `master`, therefore I use `-DevOpsRepositoryDefaultBranch master`.
 
 ```powershell
 # Navigate to the iac folder 
@@ -85,7 +95,7 @@ az ad sp list --filter "displayName eq 'iac-keyvault-acmebot-iac-spn'" --query [
 
 ## Task #3 - configure Azure DevOps pipeline for `domains` workload
 
-Now lets configure an empty and dummy infrastructure deployment pipeline for the `iac-domains-iac` repository. Later, we will use this pipeline to deploy Bicep code to the `iac-domains-rg` resource group.
+Now, let's configure an empty and dummy infrastructure deployment pipeline for the `iac-domains-iac` repository. Later, we will use this pipeline to deploy Bicep code to the `iac-domains-rg` resource group.
 
 Start by cloning the `iac-domains-iac` repository to your local machine. 
 
@@ -136,8 +146,13 @@ Pipeline will now start and should succeed. If so, go to the `iac-domains-rg` re
 
 Repeat the same steps for the `iac-keyvault-acmebot-iac` repository. Remember that you need to change `$workloadName` variable to `keyvault-acmebot` in `deploy.ps1` file.
 
-
 ## Useful links
+
+* [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
+* [Azure DevOps Repos](https://docs.microsoft.com/en-us/azure/devops/repos/get-started/what-is-repos?view=azure-devops)
+* [Azure DevOps Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops)
+* [Azure DevOps Service Connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml)
+* [az devops](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/devops?view=azure-cli-latest)
 
 ## Next
 
