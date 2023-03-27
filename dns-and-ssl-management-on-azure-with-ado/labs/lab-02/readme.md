@@ -2,7 +2,7 @@
 
 You can use `Azure DNS` to host your DNS domain and manage your DNS records. By hosting your domains in Azure, you can manage your DNS records as code.
 
-Suppose you buy the domain `iac-lab-wip.com` from a domain name registrar (in my case, I purchased it from GoDaddy.com). You then create an Azure DNS Zone with the same name `iac-lab-wip.com`. Since you're the owner of the domain, you can configure the name server (NS) records for your domain. Users around the world are then directed to your domain in your Azure DNS zone when they try to resolve DNS records in `iac-lab-wip.com`.
+Suppose you buy the domain `iac-lab-wip.com` from a domain name registrar (in my case, I purchased it from [GoDaddy](GoDaddy.com)). You then create an Azure DNS Zone with the same name `iac-lab-wip.com` and since you're the owner of the domain, you can configure the name server (NS) records for your domain. Users around the world are then directed to your domain in your Azure DNS zone when they try to resolve DNS records in `iac-lab-wip.com`.
 
 In this lab you will:
 
@@ -24,16 +24,20 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
 }
 ```
 
-> Note, the name of dnsZone must be exactly the same as your domain name. In my case, it's `iac-lab-wip.com` and the file name is `iac-lab-wip.com.bicep`.
+> Note, the name of dnsZone must be exactly the same as your domain name. In my case, it's `iac-lab-wip.com` and the Bicep file name is `iac-lab-wip.com.bicep`.
 
 Edit `deployment.bicep` file with the following content:
 
 ```bicep
 targetScope = 'resourceGroup'
+
+param workloadName string
+param location string
 param buildVersion string
 
 param tags object = {
   BuildVersion: buildVersion
+  WorkloadName: workloadName
 }
 
 module dnsZone 'modules/YOU-DOMAIN-NAME.bicep' = {
@@ -44,24 +48,7 @@ module dnsZone 'modules/YOU-DOMAIN-NAME.bicep' = {
 }
 ```
 
-Edit `deploy.ps1` file with the following content:
-
-```powershell
-param (
-    [string]$DeploymentName
-)
-
-$workloadName = "domains"
-$workloadResourceGroup = "iac-$workloadName-rg"
-
-Write-Host "[Deployment: $DeploymentName] - deploying $workloadName workload to $workloadResourceGroup resource group"
-az deployment group create -g $workloadResourceGroup `
-    -f src/deployment.bicep `
-    -p buildVersion=$DeploymentName `
-    -n $DeploymentName
-```
-
-Remove `parameters.json` file as it's not in use in this workload.
+Here we use `modules` feature of Bicep to import the DNS zone resource from the `modules\YOU-DOMAIN-NAME.bicep` file and we pass `tags` parameter to the module.
 
 Commit changes to the `iac-domains-iac` repo.
 

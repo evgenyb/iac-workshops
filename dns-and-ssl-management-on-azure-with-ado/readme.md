@@ -14,7 +14,7 @@ This is level 200 workshop that covers different aspects of automating DNS and c
 * Welcome + practical information
 * [Slides] - DNS and Certificate options on Azure
 * [Lab-01](labs/lab-01/readme.md) - provision workshop infrastructure
-* [Lab-02](labs/lab-02/readme.md) - create Azure DNS Zone
+* [Lab-02](labs/lab-02/readme.md) - create Azure DNS Zone and Azure Keyvault for SSL certificates
 * [Lab-03](labs/lab-03/readme.md) - delegate your domain to Azure DNS Zone
 * [Lab-04](labs/lab-04/readme.md) - deploy `keyvault-acmebot`
 * Lab-05 - configure custom domain for keyvault-acmebot under your domain

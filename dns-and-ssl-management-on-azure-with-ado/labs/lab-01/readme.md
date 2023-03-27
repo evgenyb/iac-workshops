@@ -33,17 +33,20 @@ In addition it will assign you a `Key Vault Administrator` role on the newly cre
 
 ## Task #2 - create two new workloads: domains and keyvault-acmebot
 
-Before you can run `Create-Workload.ps1` script, you need to install [azure devops az cli extension](https://learn.microsoft.com/en-us/cli/azure/devops?view=azure-cli-latest) and then login to Azure DevOps with your personal access token:
+Before you can run `Create-Workload.ps1` script, you need to install [azure devops az cli extension](https://learn.microsoft.com/en-us/cli/azure/devops?view=azure-cli-latest) and then login to Azure DevOps with your Personal Access Token (a.k.a. PAT). You generate new personal access token at https://dev.azure.com/YOUR-ORGANIZATION/_usersSettings/tokens page. Make sure you select your organization or use `All accessible organizations` if you want to use this token within all organizations. To make things easier, during this workshop, use `Full access` as a token scope. At your production environment, you should go with `Custom defined` option and define scopes for each item: `Code`, `Release`, `Service Connections` etc.
 
 ```powershell
 # Install Azure DevOps extension
 az extension add --name azure-devops
 
-# Login to Azure DevOps with your personal access token. You can get your personal access token from https://dev.azure.com/ifoobar/_usersSettings/tokens
+# Login to Azure DevOps with your personal access token. You create new personal access token at https://dev.azure.com/YOUR-ORGANIZATION/_usersSettings/tokens
 az devops login
+
+# Test that you are logged in by querying your Azure DevOps projects
+az devops project list --query value[].name -otsv
 ```
 
-Then you need to change the following variables at `Create-Workload.ps1` script:
+Then change the following variables inside `Create-Workload.ps1` script:
 
 | Variable | Description |
 | --- | --- |
@@ -97,10 +100,10 @@ az ad sp list --filter "displayName eq 'iac-keyvault-acmebot-iac-spn'" --query [
 
 Now, let's configure an empty and dummy infrastructure deployment pipeline for the `iac-domains-iac` repository. Later, we will use this pipeline to deploy Bicep code to the `iac-domains-rg` resource group.
 
-Start by cloning the `iac-domains-iac` repository to your local machine. 
+Start by cloning the `iac-domains-iac` repository to your local machine.
 
 ```powershell
-# clone iac-domains-iac repository
+# Clone iac-domains-iac repository. You can find the URL and clone options from the Azure DevOps repository page.
 git clone git@ssh.dev.azure.com:v3/<path-within-your-organization>/iac-domains-iac
 
 # change directory to iac-domains-iac
@@ -110,12 +113,20 @@ cd iac-domains-iac
 cp -r <path-to>/iac-repo-template/* .
 ```
 
-Edit `deploy.ps1` file and change `$workloadName` variable to `domains`. Save the file.
+Edit `deploy.ps1` file and change `$workloadName` variable to `domains`. 
+
+```powershell
+...
+$workloadName = "domains"
+...
+```
+
+Save the file and push the changes.
 
 ```powershell
 # commit changes
 git status
-git add .
+git add -A
 git commit -m "initial commit"
 git push
 ```
