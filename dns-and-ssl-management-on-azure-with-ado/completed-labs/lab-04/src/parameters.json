@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "norwayeast"
+        },
+        "logAnalyticsWorkspaceResourceId": {
+            "value": "YOUR-WORKSPACE-ID"
+        },
+        "mailAddress": {
+            "value": "YOUR-EMAIL"
+        },
+        "keyVaultBaseUrl": {
+            "value": "YOUR-KEYVAULT"                                // az keyvault list -g iac-domains-rg --query [0].properties.vaultUri -otsv
+        },
+        "dnsProviderConfiguration": {
+            "value": [
+                {
+                    "name": "Acmebot:AzureDns:SubscriptionId",
+                    "value": "YOUR-SUBSCRIPTION-ID"                 // az account show --query id -o tsv
+                }
+            ]
+        }
+    }
+}
