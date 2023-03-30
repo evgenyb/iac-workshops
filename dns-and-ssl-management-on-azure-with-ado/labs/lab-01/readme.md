@@ -13,7 +13,7 @@ To learn more about how to automate Azure workload provisioning, check my [Autom
 
 ## Task #1 - provision support resources for the workshop
 
-We will be using `Create-Workload.ps1` script that we created during the [Automate Azure workload provisioning with Bicep, Powershell and Azure DevOps workshop](https://github.com/evgenyb/iac-workshops/tree/main/iac-with-azure-devops). It requires Azure Keyvault to store Azure Service Principal credentials. Let's provision Azure Keyvault first.
+We will be using `Create-Workload.ps1` orchestration script. It requires Azure Keyvault to store Azure Service Principal credentials. Let's provision Azure Keyvault first.
 Since Azure Keyvault name has to be globally unique, we will use Bicep `uniqueString` function to generate a Key Vault name.
 
 ```powershell
