@@ -9,11 +9,17 @@ This is level 200 workshop that covers different aspects of automating DNS and c
 * What options are available on Azure to maintain SSL certificates
 * How to automate [Let's Encrypt](https://letsencrypt.org/) certificate management with `keyvault-acmebot`
 
-
 ## Agenda
- 
-Work in progress. Will be updates when ready...
-  
+
+* Welcome + practical information
+* [Slides] - DNS and Certificate options on Azure
+* [Lab-01](labs/lab-01/readme.md) - provision workshop infrastructure
+* [Lab-02](labs/lab-02/readme.md) - create Azure DNS Zone and Azure Keyvault for SSL certificates
+* [Lab-03](labs/lab-03/readme.md) - delegate your domain to Azure DNS Zone
+* [Lab-04](labs/lab-04/readme.md) - deploy `keyvault-acmebot`
+* [Lab-05](labs/lab-05/readme.md) - configure custom domain for keyvault-acmebot
+* [Lab-06](labs/lab-06/readme.md) - cleaning up resources
+
 ## Links
 
 * [Workshop prerequisites](prerequisites.md)
@@ -22,4 +28,4 @@ Work in progress. Will be updates when ready...
 
 ## Feedback
 
-* Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/7) to comment on this workshop. 
+* Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/7) to comment on this workshop.
