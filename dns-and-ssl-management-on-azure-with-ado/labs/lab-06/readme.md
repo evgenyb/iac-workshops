@@ -7,4 +7,10 @@ This is the most important part of the workshop. We need to clean up all resourc
 ```powershell
 # Delete iac-ws3-rg resource group
 az group delete --name iac-ws3-rg --yes --no-wait
+
+# Delete iac-domains-rg resource group
+az group delete --name iac-domains-rg --yes --no-wait
+
+# Delete iac-keyvault-acmebot-rg resource group
+az group delete --name iac-keyvault-acmebot-rg --yes --no-wait
 ```
