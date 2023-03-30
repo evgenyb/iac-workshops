@@ -28,6 +28,7 @@ This script will create the following resources:
 
 * A new resource group called `iac-ws3-rg`
 * A new Azure Key Vault called `iac-ws3-<unique-string>-kv`
+* A new Log Analytics Workspace `iac-ws3-<unique-string>-la`
 
 In addition it will assign you a `Key Vault Administrator` role on the newly created Key Vault, so you can manage secrets.
 
@@ -113,7 +114,7 @@ cd iac-domains-iac
 cp -r <path-to>/iac-repo-template/* .
 ```
 
-Edit `deploy.ps1` file and change `$workloadName` variable to `domains`. 
+Edit `deploy.ps1` file and change `$workloadName` variable to `domains`.
 
 ```powershell
 ...
@@ -131,7 +132,7 @@ git commit -m "initial commit"
 git push
 ```
 
-Now open pipeline and start it by clicking `Run pipeline` button.
+Now open `iac-domains-iac` pipeline and start it by clicking `Run pipeline` button.
 ![4](images/4-0.png)
 
 Then select your branch and click `Run`.

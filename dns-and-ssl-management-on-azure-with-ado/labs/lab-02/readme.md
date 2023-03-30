@@ -16,15 +16,43 @@ Create new file called <YOU-DOMAIN-NAME>.bicep under `modules` folder of your `i
 
 ```bicep
 param tags object
+param dnsZoneContributors array
 
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: 'YOU-DOMAIN-NAME'
   location: 'global'
   tags: tags  
 }
+
+var dnsZoneContributorRoleId = 'befefa01-2a29-4197-83a8-272ff33ce314' // https://www.azadvertizer.net/azrolesadvertizer/befefa01-2a29-4197-83a8-272ff33ce314.html
+
+resource administratorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for dnsZoneContributor in dnsZoneContributors: {
+  scope: dnsZone
+  name: guid(dnsZone.id, dnsZoneContributor, dnsZoneContributorRoleId)  
+  properties: {
+    principalId: dnsZoneContributor
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', dnsZoneContributorRoleId)
+  }  
+}]
 ```
 
-> Note, the name of dnsZone must be exactly the same as your domain name. In my case, it's `iac-lab-wip.com` and the Bicep file name is `iac-lab-wip.com.bicep`.
+> Note, the name of dnsZone resource must be exactly the same as your domain name. In my case, it's `iac-lab-wip.com` and the Bicep file name is `iac-lab-wip.com.bicep`.
+
+There a parameter called `dnsZoneContributors` that will allow to assign `Dns Zone Contributor` role to the list of users or spns. For now it will be empty array, but later we will configure it.
+
+Edit `parameters.json` file and add new parameter `dnsZoneContributors` with the following content:
+
+```json
+...
+    "parameters": {
+      ...
+        "dnsZoneContributors": {
+            "value": []
+          }        
+      ...
+    }
+...
+```
 
 Edit `deployment.bicep` file with the following content:
 
@@ -34,6 +62,7 @@ targetScope = 'resourceGroup'
 param workloadName string
 param location string
 param buildVersion string
+param dnsZoneContributors array
 
 param tags object = {
   BuildVersion: buildVersion
@@ -44,6 +73,7 @@ module dnsZone 'modules/YOU-DOMAIN-NAME.bicep' = {
   name: 'YOU-DOMAIN-NAME'
   params: {
     tags: tags
+    dnsZoneContributors: dnsZoneContributors
   }
 }
 ```
@@ -81,6 +111,7 @@ targetScope = 'resourceGroup'
 param location string = resourceGroup().location
 param keyvaultCertificatesOfficers array
 param keyVaultAdministrators array
+param keyVaultSecretsUsers array
 param tags object
 
 var kvName = 'iac-${uniqueString(subscription().id, resourceGroup().name)}-kv'
@@ -116,6 +147,7 @@ resource administratorRoleAssignment 'Microsoft.Authorization/roleAssignments@20
 
 var keyvaultCertificatesOfficerRoleId = 'a4417e6f-fecd-4de8-b567-7b0420556985' // https://www.azadvertizer.net/azrolesadvertizer/a4417e6f-fecd-4de8-b567-7b0420556985.html
 resource certificatesOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for officer in keyvaultCertificatesOfficers: {
+  scope: kv
   name: guid(kv.id, officer, keyvaultCertificatesOfficerRoleId)  
   properties: {
     principalId: officer
@@ -123,15 +155,28 @@ resource certificatesOfficerRoleAssignment 'Microsoft.Authorization/roleAssignme
   }  
 }]
 
+var keyvaultsecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6' // https://www.azadvertizer.net/azrolesadvertizer/4633458b-17de-408a-b874-0445c86b69e6.html
+resource secretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for secretsUser in keyVaultSecretsUsers: {
+  scope: kv
+  name: guid(kv.id, secretsUser, keyvaultsecretsUserRoleId)  
+  properties: {
+    principalId: secretsUser
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyvaultsecretsUserRoleId)
+  }  
+}]
+
 output keyVaultName string = kv.name
 output keyVaultId string = kv.id
 ```
 
-This file creates a new Azure KeyVault resource, assigns `Key Vault Administrator` and `Key Vault Certificate Officer` roles to the specified identities configured with two parameters:
-`keyvaultCertificatesOfficers` and `keyVaultAdministrators`. Add two new parameters into the `parameters.json` file:
+This file creates a new Azure KeyVault resource, assigns `Key Vault Administrator`, `Key Vault Certificate Officer` and `Key Vault Secrets User` roles to the specified identities configured with three parameters:
+`keyvaultCertificatesOfficers`, `keyVaultAdministrators` and `keyVaultSecretsUsers`. 
+Add three new parameters into the `parameters.json` file:
 
 ```json
 ...
+    "parameters": {
+      ...
         "keyvaultCertificatesOfficers": {
             "value": []
         },
@@ -139,17 +184,25 @@ This file creates a new Azure KeyVault resource, assigns `Key Vault Administrato
             "value": [
                 "00000000-0000-0000-0000-000000000000" // az ad signed-in-user show --query id -o tsv
             ]
-        }        
+        },
+        "keyVaultSecretsUsers": {
+            "value": [
+                "34774879-07e4-4e0a-96e0-63dfa2379bed"  // Microsoft.Azure.WebSites
+            ]
+        }
+        ...                
+    }
 ...        
 ```
 
-Add your own user id (instead of `00000000-0000-0000-0000-000000000000`) into `keyVaultAdministrators` array. You get your user id with the following command:
+Replace `00000000-0000-0000-0000-000000000000` with your user object id under `keyVaultAdministrators` array. You get your user id with the following command:
 
 ```powershell
 # Get signed in user id
 az ad signed-in-user show --query id -o tsv
 ```
 
+Keep `Microsoft.Azure.WebSites` (34774879-07e4-4e0a-96e0-63dfa2379bed) object id under `keyVaultSecretsUsers` and later we will add mode identities into this array.
 We will set `keyvaultCertificatesOfficers` parameter later, so for now keep it as an empty array `[]`.
 
 Change the `deployment.bicep` file with the following content:
@@ -162,6 +215,8 @@ param location string
 param buildVersion string
 param keyvaultCertificatesOfficers array
 param keyVaultAdministrators array
+param keyVaultSecretsUsers array
+param dnsZoneContributors array
 
 param tags object = {
   BuildVersion: buildVersion
@@ -172,6 +227,7 @@ module dnsZone 'modules/YOU-DOMAIN-NAME.bicep' = {
   name: 'YOU-DOMAIN-NAME'
   params: {
     tags: tags
+    dnsZoneContributors: dnsZoneContributors
   }
 }
 
@@ -181,6 +237,7 @@ module kv 'modules/keyvault.bicep' = {
     location: location
     keyVaultAdministrators: keyVaultAdministrators
     keyvaultCertificatesOfficers: keyvaultCertificatesOfficers
+    keyVaultSecretsUsers: keyVaultSecretsUsers
     tags: tags
   }
 }
