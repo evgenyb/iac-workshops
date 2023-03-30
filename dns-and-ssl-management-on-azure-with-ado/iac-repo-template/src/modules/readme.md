@@ -1,0 +1,1 @@
+Keep this file when folder is empty
