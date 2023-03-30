@@ -15,7 +15,7 @@
         },
         "keyVaultSecretsUsers": {
             "value": [
-                "34774879-07e4-4e0a-96e0-63dfa2379bed"  // Microsoft.Azure.WebSites
+                "00000000-0000-0000-0000-000000000000"  // az ad sp show --id abfa0a7c-a6b6-4736-8310-5855508787cd  --query id -otsv
             ]
         },
         "dnsZoneContributors": {

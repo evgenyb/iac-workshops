@@ -189,7 +189,7 @@ Add three new parameters into the `parameters.json` file:
         },
         "keyVaultSecretsUsers": {
             "value": [
-                "34774879-07e4-4e0a-96e0-63dfa2379bed"  // Microsoft.Azure.WebSites
+                "00000000-0000-0000-0000-000000000000"  // az ad sp show --id abfa0a7c-a6b6-4736-8310-5855508787cd  --query id -otsv
             ]
         }
         ...                
@@ -204,8 +204,16 @@ Replace `00000000-0000-0000-0000-000000000000` with your user object id under `k
 az ad signed-in-user show --query id -o tsv
 ```
 
-Keep `Microsoft.Azure.WebSites` (34774879-07e4-4e0a-96e0-63dfa2379bed) object id under `keyVaultSecretsUsers` and later we will add mode identities into this array.
-We will set `keyvaultCertificatesOfficers` parameter later, so for now keep it as an empty array `[]`.
+Add the `Microsoft.Azure.WebSites` service principal id into the `keyVaultSecretsUsers` array. You get the service principal id with the following command:
+
+```powershell 
+# get Microsoft.Azure.WebSites service principal id
+az ad sp show --id abfa0a7c-a6b6-4736-8310-5855508787cd  --query id -otsv
+```
+
+We will add mode identities into this array.
+
+Keep `keyvaultCertificatesOfficers` array empty, we will add more identities later.
 
 Change the `deployment.bicep` file with the following content:
 

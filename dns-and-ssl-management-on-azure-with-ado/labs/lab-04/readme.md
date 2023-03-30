@@ -166,8 +166,8 @@ Follow the original [instructions](https://github.com/shibayan/keyvault-acmebot/
 
 `keyvault-acmebot` is implemented as an Azure Function with [System Assigned Managed Identity](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview#managed-identity-types). To allow `keyvault-acmebot` to access Azure DNS zone and certificate Azure KeyVault, we need to add access control (IAM) to these resources:
 
-- `keyvault-acmebot` need to maintain certificates, therefore we need to assign `keyvault-acmebot` managed identity with  `Key Vault Certificates Officer` role at the Azure KeyVault scope.  
-- `keyvault-acmebot` meed to create DNS records, therefore we need to assign `keyvault-acmebot` managed identity with `DNS Zone Contributor` role at the Azure DNS zone scope
+- `keyvault-acmebot` needs to maintain certificates, therefore we need to assign `keyvault-acmebot` managed identity with  `Key Vault Certificates Officer` role at the Azure KeyVault scope.  
+- `keyvault-acmebot` needs to create DNS records, therefore we need to assign `keyvault-acmebot` managed identity with `DNS Zone Contributor` role at the Azure DNS zone scope
 
 First, we need to get the `keyvault-acmebot` managed identity id. You can get it from the portal or with cli:
 

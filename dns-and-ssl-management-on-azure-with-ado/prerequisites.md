@@ -89,3 +89,9 @@ choco install git
 # Install git with winget
 winget install Git.Git
 ```
+
+## Register `Microsoft.Web` resource provider
+
+```powershell
+az provider register --namespace Microsoft.Web
+```
