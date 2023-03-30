@@ -6,7 +6,7 @@
             "value": "norwayeast"
         },
         "logAnalyticsWorkspaceResourceId": {
-            "value": "YOUR-WORKSPACE-ID"
+            "value": "YOUR-WORKSPACE-ID"                            // az monitor log-analytics workspace list -g iac-ws3-rg  --query [0].id -otsv
         },
         "mailAddress": {
             "value": "YOUR-EMAIL"

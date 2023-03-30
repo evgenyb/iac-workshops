@@ -20,3 +20,12 @@ module kv 'modules/keyvault.bicep' = {
     signedInUserId: signedInUserId
   }
 }
+
+module la 'modules/logAnalytics.bicep' = {
+  name: '${prefix}-la'
+  scope: resourceGroup
+  params: {
+    prefix: prefix
+    location: location
+  }
+}

@@ -2,7 +2,6 @@ param prefix string
 param location string
 param signedInUserId string
 
-
 var keyvaultName = '${prefix}-${uniqueString(subscription().subscriptionId, resourceGroup().id)}-kv'
 
 resource kv 'Microsoft.KeyVault/vaults@2019-09-01' = {
