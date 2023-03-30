@@ -14,7 +14,7 @@ In this lab you will:
 
 ## Task #1 - implement DNS zone
 
-Create new file called <YOU-DOMAIN-NAME>.bicep under `modules` folder of your `iac-domains-iac` repo with the following content:
+Create new file called YOU-DOMAIN-NAME.bicep under `modules` folder of your `iac-domains-iac` repo with the following content:
 
 ```bicep
 param tags object
