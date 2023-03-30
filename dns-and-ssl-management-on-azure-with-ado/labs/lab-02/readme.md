@@ -10,6 +10,8 @@ In this lab you will:
 * migrate DNS records from registrar to Azure DNS Zone
 * add new DNS records to Azure DNS Zone as code
 
+> If you stack with implementation this lab, you can find complete solution in the `lab-02` folder of the `iac-lab-wip` repo.
+
 ## Task #1 - implement DNS zone
 
 Create new file called <YOU-DOMAIN-NAME>.bicep under `modules` folder of your `iac-domains-iac` repo with the following content:
