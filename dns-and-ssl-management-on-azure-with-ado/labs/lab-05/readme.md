@@ -113,9 +113,9 @@ When import is finished, you should see the new custom domain added to the list.
 
 ![9](images/9.png)
 
-## Task #3 - xxx
+## Task #3 - add new hostname into the Application Registration `Redirect URIs`
 
-We need to add new domain into the Application Registration `Redirect URIs`. Open your `keyvault-acmebot` azure function, navigate to `Authentication` tab and click to the App Registration under Identity provider list. If you haven't change anything, then name of the App Registration is the same as the name of the Azure function.
+We need to add new hostname into the Application Registration `Redirect URIs`. Open your `keyvault-acmebot` azure function, navigate to `Authentication` tab and click to the App Registration under Identity provider list. If you followed default naming convention, then the name of the App Registration is the same as the name of the Azure function.
 
 ![10](images/10.png)
 
