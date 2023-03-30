@@ -3,6 +3,7 @@ targetScope = 'resourceGroup'
 param location string = resourceGroup().location
 param keyvaultCertificatesOfficers array
 param keyVaultAdministrators array
+param keyVaultSecretsUsers array
 param tags object
 
 var kvName = 'iac-${uniqueString(subscription().id, resourceGroup().name)}-kv'
@@ -38,10 +39,21 @@ resource administratorRoleAssignment 'Microsoft.Authorization/roleAssignments@20
 
 var keyvaultCertificatesOfficerRoleId = 'a4417e6f-fecd-4de8-b567-7b0420556985' // https://www.azadvertizer.net/azrolesadvertizer/a4417e6f-fecd-4de8-b567-7b0420556985.html
 resource certificatesOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for officer in keyvaultCertificatesOfficers: {
+  scope: kv
   name: guid(kv.id, officer, keyvaultCertificatesOfficerRoleId)  
   properties: {
     principalId: officer
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyvaultCertificatesOfficerRoleId)
+  }  
+}]
+
+var keyvaultsecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6' // https://www.azadvertizer.net/azrolesadvertizer/4633458b-17de-408a-b874-0445c86b69e6.html
+resource secretsUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for secretsUser in keyVaultSecretsUsers: {
+  scope: kv
+  name: guid(kv.id, secretsUser, keyvaultsecretsUserRoleId)  
+  properties: {
+    principalId: secretsUser
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyvaultsecretsUserRoleId)
   }  
 }]
 

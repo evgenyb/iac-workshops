@@ -5,6 +5,7 @@ param location string
 param buildVersion string
 param keyvaultCertificatesOfficers array
 param keyVaultAdministrators array
+param keyVaultSecretsUsers array
 param dnsZoneContributors array
 
 param tags object = {
@@ -26,6 +27,7 @@ module kv 'modules/keyvault.bicep' = {
     location: location
     keyVaultAdministrators: keyVaultAdministrators
     keyvaultCertificatesOfficers: keyvaultCertificatesOfficers
+    keyVaultSecretsUsers: keyVaultSecretsUsers
     tags: tags
   }
 }

@@ -13,6 +13,11 @@
                 "00000000-0000-0000-0000-000000000000" // az ad signed-in-user show --query id -o tsv
             ]
         },
+        "keyVaultSecretsUsers": {
+            "value": [
+                "34774879-07e4-4e0a-96e0-63dfa2379bed"  // Microsoft.Azure.WebSites
+            ]
+        },
         "dnsZoneContributors": {
             "value": []
         }                
