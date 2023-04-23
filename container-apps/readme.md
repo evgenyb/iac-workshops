@@ -24,4 +24,4 @@ Will be provided soon
 
 ## Feedback
 
-- Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/7) to comment on this workshop.
+- Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/9) to comment on this workshop.
