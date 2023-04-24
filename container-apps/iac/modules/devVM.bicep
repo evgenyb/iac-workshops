@@ -2,11 +2,11 @@ param location string
 param vmName string
 param vmSubnetId string
 param vmSize string = 'Standard_D2s_v3'
-param vmPublisher string = 'MicrosoftWindowsServer'
-param vmOffer string = 'WindowsServer'
-param vmSku string = '2022-Datacenter'
+param vmPublisher string = 'microsoftvisualstudio'
+param vmOffer string = 'visualstudioplustools'
+param vmSku string = 'vs-2022-pro-general-win10-m365-gen2'
 param vmVersion string = 'latest'
-param vmStorageAccountType string = 'StandardSSD_LRS'
+param vmStorageAccountType string = 'Premium_LRS'
 param adminUsername string = 'iac-admin'
 @secure()
 param adminPassword string
@@ -54,6 +54,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
         managedDisk: {
           storageAccountType: vmStorageAccountType
         }
+        diskSizeGB: 127
       }
       dataDisks: []
     }

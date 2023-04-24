@@ -64,7 +64,7 @@ module acr 'modules/acr.bicep' = {
   }
 }
 
-module testVM 'modules/vm.bicep' = {
+module testVM 'modules/devVM.bicep' = {
   name: 'testVM'
   scope: rg
   params: {
