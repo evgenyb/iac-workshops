@@ -22,6 +22,10 @@ Will be provided soon
 - [Workshop prerequisites](prerequisites.md)
 - [Azure Container Apps overview](https://learn.microsoft.com/en-GB/azure/container-apps/overview)
 
+
+https://aztoso.com/container-apps/deep-dive-overview-and-networking/
+https://learn.microsoft.com/en-us/azure/container-apps/networking
+
 ## Feedback
 
 - Visit the [Github Issue](https://github.com/evgenyb/iac-workshops/issues/9) to comment on this workshop.
