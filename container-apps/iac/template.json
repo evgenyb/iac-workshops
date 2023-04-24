@@ -5,26 +5,36 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "18101633900023142360"
+      "templateHash": "13648961077566024399"
     }
   },
   "parameters": {
     "location": {
       "type": "string"
     },
-    "vnetConfig": {
-      "type": "object"
-    },
-    "signedUserId": {
-      "type": "string"
+    "vnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.10",
+      "metadata": {
+        "description": "Two first segments of Virtual Network address prefix. For example, if the address prefix is 10.10.0.0/22, then the value of this parameter should be 10.10"
+      }
     },
     "testVMAdminPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "Test VM admin account password."
+      }
+    },
+    "prefix": {
+      "type": "string",
+      "defaultValue": "iac-ws4",
+      "metadata": {
+        "description": "Lab resources prefix."
+      }
     }
   },
   "variables": {
-    "prefix": "iac-ws4",
-    "resourceGroupName": "[format('{0}-rg', variables('prefix'))]",
+    "resourceGroupName": "[format('{0}-rg', parameters('prefix'))]",
     "domains": []
   },
   "resources": [
@@ -37,7 +47,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "la",
+      "name": "logAnalyticsWorkspace",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -49,7 +59,7 @@
             "value": "[parameters('location')]"
           },
           "prefix": {
-            "value": "[variables('prefix')]"
+            "value": "[parameters('prefix')]"
           }
         },
         "template": {
@@ -108,7 +118,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "vnet",
+      "name": "VirtualNetwork",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -120,10 +130,10 @@
             "value": "[parameters('location')]"
           },
           "prefix": {
-            "value": "[variables('prefix')]"
+            "value": "[parameters('prefix')]"
           },
-          "vnetConfig": {
-            "value": "[parameters('vnetConfig')]"
+          "vnetAddressPrefix": {
+            "value": "[parameters('vnetAddressPrefix')]"
           }
         },
         "template": {
@@ -133,7 +143,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "9544737833487936613"
+              "templateHash": "14578413579044737226"
             }
           },
           "parameters": {
@@ -143,8 +153,8 @@
             "prefix": {
               "type": "string"
             },
-            "vnetConfig": {
-              "type": "object"
+            "vnetAddressPrefix": {
+              "type": "string"
             }
           },
           "variables": {
@@ -157,23 +167,37 @@
               "name": "[variables('virtualNetworkName')]",
               "location": "[parameters('location')]",
               "properties": {
-                "copy": [
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[format('{0}.0.0/22', parameters('vnetAddressPrefix'))]"
+                  ]
+                },
+                "subnets": [
                   {
-                    "name": "subnets",
-                    "count": "[length(parameters('vnetConfig').subnets)]",
-                    "input": {
-                      "name": "[parameters('vnetConfig').subnets[copyIndex('subnets')].name]",
-                      "properties": {
-                        "addressPrefix": "[parameters('vnetConfig').subnets[copyIndex('subnets')].addressPrefix]"
-                      }
+                    "name": "AzureBastionSubnet",
+                    "properties": {
+                      "addressPrefix": "[format('{0}.0.0/26', parameters('vnetAddressPrefix'))]"
+                    }
+                  },
+                  {
+                    "name": "capp-snet",
+                    "properties": {
+                      "addressPrefix": "[format('{0}.2.0/23', parameters('vnetAddressPrefix'))]"
+                    }
+                  },
+                  {
+                    "name": "testvm-snet",
+                    "properties": {
+                      "addressPrefix": "[format('{0}.0.64/26', parameters('vnetAddressPrefix'))]"
+                    }
+                  },
+                  {
+                    "name": "plinks-snet",
+                    "properties": {
+                      "addressPrefix": "[format('{0}.1.0/24', parameters('vnetAddressPrefix'))]"
                     }
                   }
                 ],
-                "addressSpace": {
-                  "addressPrefixes": [
-                    "[parameters('vnetConfig').vnetAddressPrefix]"
-                  ]
-                },
                 "enableDdosProtection": false,
                 "enableVmProtection": false
               }
@@ -210,10 +234,10 @@
             "value": "[parameters('location')]"
           },
           "prefix": {
-            "value": "[variables('prefix')]"
+            "value": "[parameters('prefix')]"
           },
           "bastionSubnetId": {
-            "value": "[format('{0}/subnets/AzureBastionSubnet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value)]"
+            "value": "[format('{0}/subnets/AzureBastionSubnet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
           }
         },
         "template": {
@@ -287,7 +311,7 @@
       },
       "dependsOn": [
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     },
     {
@@ -302,7 +326,7 @@
         "mode": "Incremental",
         "parameters": {
           "linkedVNetId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value]"
           }
         },
         "template": {
@@ -353,13 +377,13 @@
       },
       "dependsOn": [
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "acr",
+      "name": "AzureContainerRegistry",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -374,7 +398,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'acrPrivateDnsZone'), '2022-09-01').outputs.id.value]"
           },
           "privateLinkSubnetId": {
-            "value": "[format('{0}/subnets/plinks-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value)]"
+            "value": "[format('{0}/subnets/plinks-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
           }
         },
         "template": {
@@ -488,7 +512,7 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'acrPrivateDnsZone')]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     },
     {
@@ -509,7 +533,7 @@
             "value": "testvm"
           },
           "vmSubnetId": {
-            "value": "[format('{0}/subnets/testvm-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value)]"
+            "value": "[format('{0}/subnets/testvm-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
           },
           "adminPassword": {
             "value": "[parameters('testVMAdminPassword')]"
@@ -652,7 +676,7 @@
       },
       "dependsOn": [
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     },
     {
@@ -670,13 +694,13 @@
             "value": "[parameters('location')]"
           },
           "logAnalyticsName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'la'), '2022-09-01').outputs.name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'logAnalyticsWorkspace'), '2022-09-01').outputs.name.value]"
           },
           "prefix": {
-            "value": "[variables('prefix')]"
+            "value": "[parameters('prefix')]"
           },
           "subnetId": {
-            "value": "[format('{0}/subnets/capp-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value)]"
+            "value": "[format('{0}/subnets/capp-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
           }
         },
         "template": {
@@ -748,9 +772,9 @@
         }
       },
       "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'la')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'logAnalyticsWorkspace')]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     },
     {
@@ -771,7 +795,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv'), '2022-09-01').outputs.environmentId.value]"
           },
           "prefix": {
-            "value": "[variables('prefix')]"
+            "value": "[parameters('prefix')]"
           }
         },
         "template": {
@@ -869,7 +893,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv'), '2022-09-01').outputs.defaultDomain.value]"
           },
           "linkedVNetId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet'), '2022-09-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value]"
           },
           "domainNames": {
             "value": "[concat(variables('domains'), createArray(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testApp'), '2022-09-01').outputs.appName.value))]"
@@ -957,7 +981,7 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv')]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testApp')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'vnet')]"
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
     }
   ]

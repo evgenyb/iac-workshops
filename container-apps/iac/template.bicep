@@ -1,12 +1,14 @@
 targetScope = 'subscription'
 
 param location string
-param vnetConfig object
-param signedUserId string
+@description('Two first segments of Virtual Network address prefix. For example, if the address prefix is 10.10.0.0/22, then the value of this parameter should be 10.10')
+param vnetAddressPrefix string = '10.10'
 @secure()
+@description('Test VM admin account password.')
 param testVMAdminPassword string
 
-var prefix = 'iac-ws4'
+@description('Lab resources prefix.')
+param prefix string = 'iac-ws4'
 
 var resourceGroupName = '${prefix}-rg'
 
@@ -16,7 +18,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 }
 
 module la 'modules/logAnalytics.bicep' = {
-  name: 'la'
+  name: 'logAnalyticsWorkspace'
   scope: rg
   params: {
     location: location
@@ -25,12 +27,12 @@ module la 'modules/logAnalytics.bicep' = {
 }
 
 module vnet 'modules/vnet.bicep' = {
-  name: 'vnet'
+  name: 'VirtualNetwork'
   scope: rg
   params: {
     location: location
     prefix: prefix
-    vnetConfig: vnetConfig
+    vnetAddressPrefix: vnetAddressPrefix
   }
 }
 
@@ -53,7 +55,7 @@ module acrPrivateDnsZone 'modules/acrPrivateDnsZone.bicep' = {
 }
 
 module acr 'modules/acr.bicep' = {
-  name: 'acr'
+  name: 'AzureContainerRegistry'
   scope: rg
   params: {
     location: location

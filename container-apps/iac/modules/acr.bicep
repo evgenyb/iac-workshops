@@ -68,17 +68,5 @@ resource privateEndpointDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGr
   }
 }
 
-// var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-// var acrPullADGroupObjectId = '02ebfd0b-5743-4651-b44b-56f78c815ce9' // BN-SEC: ACR Pull
-
-// resource acrRoleAssignmentForAksMi 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-//   scope: acr
-//   name: guid(acr.id, acrPullADGroupObjectId, acrPullRoleId)  
-//   properties: {
-//     principalId: acrPullADGroupObjectId
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
-//   }
-// }
-
 output acrId string = acr.id
 output acrName string = acr.name

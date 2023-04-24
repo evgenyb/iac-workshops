@@ -1,6 +1,6 @@
 param location string
 param prefix string
-param vnetConfig object
+param vnetAddressPrefix string
 
 var virtualNetworkName = '${prefix}-vnet'
 
@@ -10,15 +10,35 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   properties: {
     addressSpace: {
       addressPrefixes: [
-        vnetConfig.vnetAddressPrefix
+        '${vnetAddressPrefix}.0.0/22'
       ]
     }
-    subnets: [for snet in vnetConfig.subnets: {
-      name: snet.name
-      properties: {        
-        addressPrefix: snet.addressPrefix
+    subnets: [
+      {
+        name: 'AzureBastionSubnet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.0.0/26'
+        }
       }
-    }] 
+      {
+        name: 'capp-snet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.2.0/23'
+        }
+      }
+      {
+        name: 'testvm-snet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.0.64/26'
+        }
+      }
+      {
+        name: 'plinks-snet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.1.0/24'
+        }
+      }
+    ] 
     enableDdosProtection: false
     enableVmProtection: false
   }
