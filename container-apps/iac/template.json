@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "13648961077566024399"
+      "templateHash": "9502575226301541035"
     }
   },
   "parameters": {
@@ -530,7 +530,7 @@
             "value": "[parameters('location')]"
           },
           "vmName": {
-            "value": "testvm"
+            "value": "devVM"
           },
           "vmSubnetId": {
             "value": "[format('{0}/subnets/testvm-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
@@ -546,7 +546,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "8986553043659871437"
+              "templateHash": "10238429634932751015"
             }
           },
           "parameters": {
@@ -561,19 +561,19 @@
             },
             "vmSize": {
               "type": "string",
-              "defaultValue": "Standard_D2s_v3"
+              "defaultValue": "Standard_D4s_v3"
             },
             "vmPublisher": {
               "type": "string",
-              "defaultValue": "MicrosoftWindowsServer"
+              "defaultValue": "microsoftvisualstudio"
             },
             "vmOffer": {
               "type": "string",
-              "defaultValue": "WindowsServer"
+              "defaultValue": "visualstudioplustools"
             },
             "vmSku": {
               "type": "string",
-              "defaultValue": "2022-Datacenter"
+              "defaultValue": "vs-2022-pro-general-win10-m365-gen2"
             },
             "vmVersion": {
               "type": "string",
@@ -581,7 +581,7 @@
             },
             "vmStorageAccountType": {
               "type": "string",
-              "defaultValue": "StandardSSD_LRS"
+              "defaultValue": "Premium_LRS"
             },
             "adminUsername": {
               "type": "string",
@@ -652,7 +652,8 @@
                     "createOption": "FromImage",
                     "managedDisk": {
                       "storageAccountType": "[parameters('vmStorageAccountType')]"
-                    }
+                    },
+                    "diskSizeGB": 127
                   },
                   "dataDisks": []
                 },

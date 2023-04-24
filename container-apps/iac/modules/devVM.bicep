@@ -1,7 +1,7 @@
 param location string
 param vmName string
 param vmSubnetId string
-param vmSize string = 'Standard_D2s_v3'
+param vmSize string = 'Standard_D4s_v3'
 param vmPublisher string = 'microsoftvisualstudio'
 param vmOffer string = 'visualstudioplustools'
 param vmSku string = 'vs-2022-pro-general-win10-m365-gen2'

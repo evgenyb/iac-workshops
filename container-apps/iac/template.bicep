@@ -69,7 +69,7 @@ module testVM 'modules/devVM.bicep' = {
   scope: rg
   params: {
     location: location
-    vmName: 'testvm'
+    vmName: 'devVM'
     vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
     adminPassword: testVMAdminPassword
   }
