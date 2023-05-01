@@ -10,6 +10,9 @@ param testVMAdminPassword string
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
 
+@secure()
+param tenantId string = tenant().tenantId
+
 var resourceGroupName = '${prefix}-rg'
 
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -64,12 +67,12 @@ module acr 'modules/acr.bicep' = {
   }
 }
 
-module testVM 'modules/devVM.bicep' = {
+module testVM 'modules/testVM.bicep' = {
   name: 'testVM'
   scope: rg
   params: {
     location: location
-    vmName: 'devVM'
+    vmName: 'testVM'
     vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
     adminPassword: testVMAdminPassword
   }
@@ -88,6 +91,9 @@ module privateManagedEnv 'modules/private-menv.bicep' = {
 
 module testApp 'modules/testapp.bicep' = {
   name: 'testApp'
+  dependsOn: [
+    privateManagedEnv
+  ]
   scope: rg
   params: {
     location: location
@@ -97,7 +103,7 @@ module testApp 'modules/testapp.bicep' = {
 }
 var domains = []
 
-module privateMenvPrivateDnsZone 'modules/acrPrivateDnsZone copy.bicep' = {
+module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
    name: 'privateMenvPrivateDnsZone'
    scope: rg
    params: {
@@ -106,4 +112,27 @@ module privateMenvPrivateDnsZone 'modules/acrPrivateDnsZone copy.bicep' = {
      domainNames: concat(domains, [testApp.outputs.appName])
      staticIP: privateManagedEnv.outputs.staticIP
    }  
+}
+
+module vpnGateway 'modules/vpnGateway.bicep' = {
+  scope: rg
+  name: 'vpnGateway'
+  params: {
+    gatewaySubnetId: '${vnet.outputs.id}/subnets/GatewaySubnet'
+    location: location
+    prefix: prefix
+    tenantId: tenantId
+  }
+}
+
+
+module dnsResolver 'modules/dnsResolver.bicep' = {
+  scope: rg
+  name: 'dnsResolver'
+  params: {
+    location: location
+    prefix: prefix
+    subnetId: '${vnet.outputs.id}/subnets/dnsresolver-inbound-snet'
+    vnetId: vnet.outputs.id
+  }
 }

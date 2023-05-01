@@ -1,10 +1,10 @@
 param location string
 param vmName string
 param vmSubnetId string
-param vmSize string = 'Standard_D4s_v3'
-param vmPublisher string = 'microsoftvisualstudio'
-param vmOffer string = 'visualstudioplustools'
-param vmSku string = 'vs-2022-pro-general-win10-m365-gen2'
+param vmSize string = 'Standard_D2s_v3'
+param vmPublisher string = 'MicrosoftWindowsServer'
+param vmOffer string = 'WindowsServer'
+param vmSku string = '2022-Datacenter'
 param vmVersion string = 'latest'
 param vmStorageAccountType string = 'Premium_LRS'
 param adminUsername string = 'iac-admin'

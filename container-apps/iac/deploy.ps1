@@ -1,10 +1,10 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::new()
 $stopwatch.Start()
 
-$location = 'norwayeast'
+$location = 'westeurope'
 
 Write-Host "Deploying workshop lab infra into $location..."
-az deployment sub create -l $location --template-file template.bicep -p location=$location -n deployment-121
+az deployment sub create -l $location --template-file template.bicep -p location=$location -n deployment-123
 
 $stopwatch.Stop()
 

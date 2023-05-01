@@ -21,10 +21,26 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         }
       }
       {
+        name: 'GatewaySubnet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.0.128/27'
+        }
+      }
+      {
         name: 'capp-snet'
         properties: {        
           addressPrefix: '${vnetAddressPrefix}.2.0/23'
-        }
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+          delegations: [
+            // {
+            //   name: 'Microsoft.App.environments'
+            //   properties: {
+            //     serviceName: 'Microsoft.App/environments'
+            //   }
+            // }
+          ]
+        }        
       }
       {
         name: 'testvm-snet'
@@ -36,6 +52,22 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         name: 'plinks-snet'
         properties: {        
           addressPrefix: '${vnetAddressPrefix}.1.0/24'
+        }
+      }
+      {
+        name: 'dnsresolver-inbound-snet'
+        properties: {        
+          addressPrefix: '${vnetAddressPrefix}.0.160/28'
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+          delegations: [
+            {
+              name: 'Microsoft.Network.dnsResolvers'
+              properties: {
+                serviceName: 'Microsoft.Network/dnsResolvers'
+              }
+            }
+          ]
         }
       }
     ] 
