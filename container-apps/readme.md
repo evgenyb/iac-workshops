@@ -33,7 +33,7 @@ https://techcommunity.microsoft.com/t5/fasttrack-for-azure/integrating-azure-fro
 
 https://luke.geek.nz/azure/azure-point-to-site-vpn-and-private-dns-resolver/
 https://luke.geek.nz/azure/create-azure-point-to-site-vpn-using-azure-active-directory-authentication/
-
+https://azureossd.github.io/2023/01/03/Using-Managed-Identity-and-Bicep-to-pull-images-with-Azure-Container-Apps/
 
 ## Feedback
 

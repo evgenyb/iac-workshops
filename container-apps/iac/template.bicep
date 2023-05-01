@@ -3,9 +3,9 @@ targetScope = 'subscription'
 param location string
 @description('Two first segments of Virtual Network address prefix. For example, if the address prefix is 10.10.0.0/22, then the value of this parameter should be 10.10')
 param vnetAddressPrefix string = '10.10'
-@secure()
-@description('Test VM admin account password.')
-param testVMAdminPassword string
+// @secure()
+// @description('Test VM admin account password.')
+// param testVMAdminPassword string
 
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
@@ -39,15 +39,15 @@ module vnet 'modules/vnet.bicep' = {
   }
 }
 
-module bastion 'modules/bastion.bicep' = {
-  name: 'bastion'
-  scope: rg
-  params: {
-    location: location
-    prefix: prefix
-    bastionSubnetId: '${vnet.outputs.id}/subnets/AzureBastionSubnet'
-  }
-}
+// module bastion 'modules/bastion.bicep' = {
+//   name: 'bastion'
+//   scope: rg
+//   params: {
+//     location: location
+//     prefix: prefix
+//     bastionSubnetId: '${vnet.outputs.id}/subnets/AzureBastionSubnet'
+//   }
+// }
 
 module acrPrivateDnsZone 'modules/acrPrivateDnsZone.bicep' = {
   name: 'acrPrivateDnsZone'
@@ -57,26 +57,18 @@ module acrPrivateDnsZone 'modules/acrPrivateDnsZone.bicep' = {
   }  
 }
 
-module acr 'modules/acr.bicep' = {
-  name: 'AzureContainerRegistry'
-  scope: rg
-  params: {
-    location: location
-    acrPrivateDnsZoneId: acrPrivateDnsZone.outputs.id
-    privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
-  }
-}
 
-module testVM 'modules/testVM.bicep' = {
-  name: 'testVM'
-  scope: rg
-  params: {
-    location: location
-    vmName: 'testVM'
-    vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
-    adminPassword: testVMAdminPassword
-  }
-}
+
+// module testVM 'modules/testVM.bicep' = {
+//   name: 'testVM'
+//   scope: rg
+//   params: {
+//     location: location
+//     vmName: 'testVM'
+//     vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
+//     adminPassword: testVMAdminPassword
+//   }
+// }
 
 module privateManagedEnv 'modules/private-menv.bicep' = {
   name: 'privateManagedEnv'
@@ -89,18 +81,44 @@ module privateManagedEnv 'modules/private-menv.bicep' = {
   }
 }
 
-module testApp 'modules/testapp.bicep' = {
-  name: 'testApp'
-  dependsOn: [
-    privateManagedEnv
-  ]
+var uniqueStr = uniqueString(subscription().subscriptionId, rg.id)
+var acrName = 'iacws4${uniqueStr}acr'
+
+var testAppName = '${prefix}-test-capp'
+module testAppManagedIdentity 'modules/mi.bicep' = {
+  name: 'testAppMI'
   scope: rg
   params: {
     location: location
-    environmentId: privateManagedEnv.outputs.environmentId
-    prefix: prefix    
+    miName: '${testAppName}-mi'
   }
 }
+
+var acrPullObjectsIds = []
+module acr 'modules/acr.bicep' = {
+  name: 'AzureContainerRegistry'
+  scope: rg
+  params: {
+    acrName: acrName 
+    location: location
+    acrPrivateDnsZoneId: acrPrivateDnsZone.outputs.id
+    privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
+    acrPullObjectsIds: concat(acrPullObjectsIds, [testAppManagedIdentity.outputs.principalId])
+  }
+}
+
+module testApp 'modules/testapp.bicep' = {
+  name: testAppName
+  scope: rg
+  params: {
+    appName: testAppName
+    acrName: acr.outputs.acrName
+    location: location
+    environmentId: privateManagedEnv.outputs.environmentId
+    managedIdentity: testAppManagedIdentity.outputs.id
+  }
+}
+
 var domains = []
 
 module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
@@ -109,7 +127,7 @@ module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
    params: {
      privateDnsZoneName: privateManagedEnv.outputs.defaultDomain
      linkedVNetId: vnet.outputs.id
-     domainNames: concat(domains, [testApp.outputs.appName])
+     domainNames: concat(domains, [testAppName])
      staticIP: privateManagedEnv.outputs.staticIP
    }  
 }

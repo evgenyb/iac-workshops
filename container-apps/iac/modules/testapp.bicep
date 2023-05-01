@@ -1,16 +1,29 @@
-param prefix string
+param appName string
 param location string
 param environmentId string
+param acrName string
+param managedIdentity string
 
-var testAppName = '${prefix}-test-capp'
 resource capp 'Microsoft.App/containerApps@2022-10-01' = {
-  name: testAppName
+  name: appName
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity}': {}
+    }
+  }
   properties: {
     managedEnvironmentId: environmentId
     environmentId: environmentId
     configuration: {
       activeRevisionsMode: 'Single'
+      registries: [
+        {
+          server: '${acrName}.azurecr.io'
+          identity: managedIdentity
+        }
+      ]
       ingress: {
         external: true
         allowInsecure: false
@@ -26,15 +39,15 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
     }
     template: {
       containers: [
-        {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-          name: 'simple-hello-world-container'
+        {          
+          image: '${acrName}.azurecr.io/apia:latest'
+          name: 'api-a'
           resources: {
             cpu: json('0.25')
             memory: '0.5Gi'
           }
         }
-      ]
+      ]      
       scale: {
         minReplicas: 0
         maxReplicas: 1
@@ -42,5 +55,3 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
     }
   }
 }
-
-output appName string = testAppName
