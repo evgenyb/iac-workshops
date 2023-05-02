@@ -89,3 +89,12 @@ module dnsResolver 'modules/dnsResolver.bicep' = {
     vnetId: vnet.outputs.id
   }
 }
+
+module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
+  scope: rg
+  name: 'privateMenvPrivateDnsZone'
+   params: {
+     privateDnsZoneName: privateManagedEnv.outputs.defaultDomain
+     linkedVNetId: vnet.outputs.id
+   }  
+}

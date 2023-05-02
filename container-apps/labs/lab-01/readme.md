@@ -7,6 +7,13 @@
 
 ### Push image to ACR
 
+```powershell
+# get your acr name
+$acrName = (az acr list -g iac-ws4-rg  --query [0].name -otsv)
+
+# login into acr
+az acr login -n $acrName
+```
 
 ### Deploy test app
 
