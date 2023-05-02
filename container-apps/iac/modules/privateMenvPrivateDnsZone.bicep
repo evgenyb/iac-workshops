@@ -1,7 +1,5 @@
 param privateDnsZoneName string
 param linkedVNetId string
-param domainNames array
-param staticIP string
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneName
@@ -19,18 +17,5 @@ resource privateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetwor
     }
   }  
 }
-
-resource arecords 'Microsoft.Network/privateDnsZones/A@2020-06-01' = [for domain in domainNames: {
-  name: domain
-  parent: privateDnsZone
-  properties: {
-    ttl: 600
-    aRecords: [
-      {
-        ipv4Address: staticIP
-      }
-    ]
-  }
-}]
 
 output id string = privateDnsZone.id

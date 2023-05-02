@@ -1,9 +1,5 @@
 # Prerequisites
 
-## Deployment
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2Ftemplate.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
-
 ## Laptop / PC
 
 You need an laptop. OS installed at this laptop doesn't really matter. The tools we use all work cross platforms. I will be using Windows 11 with PowerShell as my shell.

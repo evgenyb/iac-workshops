@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "11267140340206473741"
+      "templateHash": "3314227598405983196"
     }
   },
   "parameters": {
@@ -25,19 +25,13 @@
       "metadata": {
         "description": "Lab resources prefix."
       }
-    },
-    "tenantId": {
-      "type": "securestring",
-      "defaultValue": "[tenant().tenantId]"
     }
   },
   "variables": {
+    "tenantId": "[tenant().tenantId]",
     "resourceGroupName": "[format('{0}-rg', parameters('prefix'))]",
     "uniqueStr": "[uniqueString(subscription().subscriptionId, subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName')))]",
-    "acrName": "[format('iacws4{0}acr', variables('uniqueStr'))]",
-    "testAppName": "[format('{0}-test-capp', parameters('prefix'))]",
-    "acrPullObjectsIds": [],
-    "domains": []
+    "acrName": "[format('iacws4{0}acr', variables('uniqueStr'))]"
   },
   "resources": [
     {
@@ -413,70 +407,6 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "testAppMI",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "miName": {
-            "value": "[format('{0}-mi', variables('testAppName'))]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "7259689184337877720"
-            }
-          },
-          "parameters": {
-            "location": {
-              "type": "string"
-            },
-            "miName": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-              "apiVersion": "2018-11-30",
-              "name": "[parameters('miName')]",
-              "location": "[parameters('location')]"
-            }
-          ],
-          "outputs": {
-            "id": {
-              "type": "string",
-              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('miName'))]"
-            },
-            "clientId": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('miName')), '2018-11-30').clientId]"
-            },
-            "principalId": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('miName')), '2018-11-30').principalId]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
       "name": "AzureContainerRegistry",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
@@ -496,9 +426,6 @@
           },
           "privateLinkSubnetId": {
             "value": "[format('{0}/subnets/plinks-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
-          },
-          "acrPullObjectsIds": {
-            "value": "[concat(variables('acrPullObjectsIds'), createArray(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testAppMI'), '2022-09-01').outputs.principalId.value))]"
           }
         },
         "template": {
@@ -508,7 +435,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "4047961275389363086"
+              "templateHash": "5098254505071926781"
             }
           },
           "parameters": {
@@ -523,16 +450,12 @@
             },
             "privateLinkSubnetId": {
               "type": "string"
-            },
-            "acrPullObjectsIds": {
-              "type": "array"
             }
           },
           "variables": {
             "pleName": "[format('{0}-ple', parameters('acrName'))]",
             "groupName": "registry",
-            "privateDnsZoneName": "privatelink.azurecr.io",
-            "acrPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d"
+            "privateDnsZoneName": "privatelink.azurecr.io"
           },
           "resources": [
             {
@@ -600,23 +523,6 @@
               "dependsOn": [
                 "[resourceId('Microsoft.Network/privateEndpoints', variables('pleName'))]"
               ]
-            },
-            {
-              "copy": {
-                "name": "acrPull",
-                "count": "[length(parameters('acrPullObjectsIds'))]"
-              },
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2020-04-01-preview",
-              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('acrName'))]",
-              "name": "[guid(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName')), parameters('acrPullObjectsIds')[copyIndex()], variables('acrPullRoleId'))]",
-              "properties": {
-                "principalId": "[parameters('acrPullObjectsIds')[copyIndex()]]",
-                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleId'))]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]"
-              ]
             }
           ],
           "outputs": {
@@ -633,230 +539,6 @@
       },
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'acrPrivateDnsZone')]",
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testAppMI')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "[variables('testAppName')]",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "appName": {
-            "value": "[variables('testAppName')]"
-          },
-          "acrName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'AzureContainerRegistry'), '2022-09-01').outputs.acrName.value]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
-          },
-          "environmentId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv'), '2022-09-01').outputs.environmentId.value]"
-          },
-          "managedIdentity": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testAppMI'), '2022-09-01').outputs.id.value]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "6670270529608380877"
-            }
-          },
-          "parameters": {
-            "appName": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "environmentId": {
-              "type": "string"
-            },
-            "acrName": {
-              "type": "string"
-            },
-            "managedIdentity": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.App/containerApps",
-              "apiVersion": "2022-10-01",
-              "name": "[parameters('appName')]",
-              "location": "[parameters('location')]",
-              "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                  "[format('{0}', parameters('managedIdentity'))]": {}
-                }
-              },
-              "properties": {
-                "managedEnvironmentId": "[parameters('environmentId')]",
-                "environmentId": "[parameters('environmentId')]",
-                "configuration": {
-                  "activeRevisionsMode": "Single",
-                  "registries": [
-                    {
-                      "server": "[format('{0}.azurecr.io', parameters('acrName'))]",
-                      "identity": "[parameters('managedIdentity')]"
-                    }
-                  ],
-                  "ingress": {
-                    "external": true,
-                    "allowInsecure": false,
-                    "targetPort": 80,
-                    "exposedPort": 0,
-                    "traffic": [
-                      {
-                        "weight": 100,
-                        "latestRevision": true
-                      }
-                    ]
-                  }
-                },
-                "template": {
-                  "containers": [
-                    {
-                      "image": "[format('{0}.azurecr.io/apia:latest', parameters('acrName'))]",
-                      "name": "api-a",
-                      "resources": {
-                        "cpu": "[json('0.25')]",
-                        "memory": "0.5Gi"
-                      }
-                    }
-                  ],
-                  "scale": {
-                    "minReplicas": 0,
-                    "maxReplicas": 1
-                  }
-                }
-              }
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'AzureContainerRegistry')]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv')]",
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'testAppMI')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "privateMenvPrivateDnsZone",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "privateDnsZoneName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv'), '2022-09-01').outputs.defaultDomain.value]"
-          },
-          "linkedVNetId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value]"
-          },
-          "domainNames": {
-            "value": "[concat(variables('domains'), createArray(variables('testAppName')))]"
-          },
-          "staticIP": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv'), '2022-09-01').outputs.staticIP.value]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "1224899075613245994"
-            }
-          },
-          "parameters": {
-            "privateDnsZoneName": {
-              "type": "string"
-            },
-            "linkedVNetId": {
-              "type": "string"
-            },
-            "domainNames": {
-              "type": "array"
-            },
-            "staticIP": {
-              "type": "string"
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
-              "name": "[parameters('privateDnsZoneName')]",
-              "location": "global"
-            },
-            {
-              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}/{1}', parameters('privateDnsZoneName'), uniqueString(parameters('linkedVNetId')))]",
-              "location": "global",
-              "properties": {
-                "registrationEnabled": false,
-                "virtualNetwork": {
-                  "id": "[parameters('linkedVNetId')]"
-                }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
-              ]
-            },
-            {
-              "copy": {
-                "name": "arecords",
-                "count": "[length(parameters('domainNames'))]"
-              },
-              "type": "Microsoft.Network/privateDnsZones/A",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}/{1}', parameters('privateDnsZoneName'), parameters('domainNames')[copyIndex()])]",
-              "properties": {
-                "ttl": 600,
-                "aRecords": [
-                  {
-                    "ipv4Address": "[parameters('staticIP')]"
-                  }
-                ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
-              ]
-            }
-          ],
-          "outputs": {
-            "id": {
-              "type": "string",
-              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'privateManagedEnv')]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork')]"
       ]
@@ -882,7 +564,7 @@
             "value": "[parameters('prefix')]"
           },
           "tenantId": {
-            "value": "[parameters('tenantId')]"
+            "value": "[variables('tenantId')]"
           }
         },
         "template": {

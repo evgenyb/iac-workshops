@@ -3,8 +3,6 @@ param location string
 param acrName string
 param acrPrivateDnsZoneId string
 param privateLinkSubnetId string
-param acrPullObjectsIds array
-
 
 resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   name: acrName
@@ -67,18 +65,6 @@ resource privateEndpointDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGr
     ]
   }
 }
-
-var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-
-resource acrPull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [for objectId in acrPullObjectsIds: {
-  scope: acr
-  name: guid(acr.id, objectId, acrPullRoleId)  
-  properties: {
-    principalId: objectId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
-  }
-}]
-
 
 output acrId string = acr.id
 output acrName string = acr.name

@@ -3,6 +3,8 @@ param location string
 param environmentId string
 param acrName string
 param managedIdentity string
+param privateDnsZoneName string
+param staticIP string
 
 resource capp 'Microsoft.App/containerApps@2022-10-01' = {
   name: appName
@@ -53,5 +55,22 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
         maxReplicas: 1
       }
     }
+  }
+}
+
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing =  {
+  name: privateDnsZoneName
+}
+
+resource arecords 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+  name: capp.name
+  parent: privateDnsZone
+  properties: {
+    ttl: 600
+    aRecords: [
+      {
+        ipv4Address: staticIP
+      }
+    ]
   }
 }
