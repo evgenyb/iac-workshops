@@ -21,8 +21,19 @@ module mi 'modules/mi.bicep' = {
   }
 }
 
+module acrPullRbac 'modules/acrrbac.bicep' = {
+  name: 'acrPullRbac'
+  params: {
+    acrName: acrName
+    principalId: mi.outputs.principalId
+  }
+}
+
 module testApp 'modules/testapp.bicep' = {
   name: testAppName
+  dependsOn: [
+    acrPullRbac // we need to assign acrPull role to the MI before creating the app, so it can pull images from ACR
+  ]
   params: {
     appName: testAppName
     acrName: acrName
@@ -31,13 +42,5 @@ module testApp 'modules/testapp.bicep' = {
     managedIdentity: mi.outputs.id
     staticIP: privateManagedEnv.properties.staticIp
     privateDnsZoneName: privateManagedEnv.properties.defaultDomain
-  }
-}
-
-module acrPullRbac 'modules/acrrbac.bicep' = {
-  name: 'acrPullRbac'
-  params: {
-    acrName: acrName
-    principalId: mi.outputs.principalId
   }
 }
