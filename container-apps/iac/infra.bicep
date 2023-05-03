@@ -1,6 +1,8 @@
 targetScope = 'subscription'
 
-param location string
+@description('Resources location')
+param location string = 'westeurope'
+
 @description('Two first segments of Virtual Network address prefix. For example, if the address prefix is 10.10.0.0/22, then the value of this parameter should be 10.10')
 param vnetAddressPrefix string = '10.10'
 

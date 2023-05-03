@@ -5,12 +5,16 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "12322219448167979385"
+      "templateHash": "10959577631802983681"
     }
   },
   "parameters": {
     "location": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "westeurope",
+      "metadata": {
+        "description": "Resources location"
+      }
     },
     "vnetAddressPrefix": {
       "type": "string",
