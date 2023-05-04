@@ -13,13 +13,15 @@ az provider register --namespace Microsoft.Network
 az provider register --namespace Microsoft.OperationalInsights
 az provider register --namespace Microsoft.App
 az provider register --namespace Microsoft.Storage
+Microsoft.ManagedIdentity
+Microsoft.Compute
 ```
 
 ### Deploy infrastructure
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
-### Push image to ACR
+### Build and push image to ACR
 
 ```powershell
 # get your acr name
@@ -27,12 +29,30 @@ $acrName = (az acr list -g iac-ws4-rg  --query [0].name -otsv)
 
 # login into acr
 az acr login -n $acrName
+
+# build image
+docker build -t apia:latest -f Dockerfile ..
+
+# Tag the image with the full ACR login server name. 
+docker tag apia:latest "$acrName.azurecr.io/apia:latest"
+
+# Push the image to the ACR instance.
+docker push "$acrName.azurecr.io/apia:latest"
 ```
 
 ### Deploy test app
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2FtestApp.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
+
+### Test api
+
 ```powershell
-az deployment group create --resource-group iac-ws4-rg --template-file .\testApp.bicep --name testApp
+# get private dns zone name
+$dnsZoneName = (az network private-dns zone list -g iac-ws4-rg --query [0].name -otsv)
+
+# test api 
+curl https://iac-ws4-test-capp.$dnsZoneName/api
 ```
+
+You should get `[api-a] - OK.` response.
