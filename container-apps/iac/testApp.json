@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.16.2.56959",
-      "templateHash": "2863734266586861149"
+      "version": "0.17.1.54307",
+      "templateHash": "1508216992175764632"
     }
   },
   "parameters": {
@@ -24,7 +24,8 @@
   "variables": {
     "uniqueStr": "[uniqueString(subscription().subscriptionId, resourceGroup().id)]",
     "acrName": "[format('iacws4{0}acr', variables('uniqueStr'))]",
-    "testAppName": "[format('{0}-test-capp', parameters('prefix'))]"
+    "testAppName": "[format('{0}-test-capp', parameters('prefix'))]",
+    "appInsightsName": "[format('{0}-appi', parameters('prefix'))]"
   },
   "resources": [
     {
@@ -50,8 +51,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "7259689184337877720"
+              "version": "0.17.1.54307",
+              "templateHash": "13295660266219475941"
             }
           },
           "parameters": {
@@ -110,8 +111,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "7388710059632680309"
+              "version": "0.17.1.54307",
+              "templateHash": "15275512030523532403"
             }
           },
           "parameters": {
@@ -174,6 +175,9 @@
           },
           "privateDnsZoneName": {
             "value": "[reference(resourceId('Microsoft.App/managedEnvironments', format('{0}-private-menv', parameters('prefix'))), '2022-10-01').defaultDomain]"
+          },
+          "appInsightsConnectionString": {
+            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString]"
           }
         },
         "template": {
@@ -182,8 +186,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.16.2.56959",
-              "templateHash": "14934128369223075851"
+              "version": "0.17.1.54307",
+              "templateHash": "7401963021636097248"
             }
           },
           "parameters": {
@@ -207,6 +211,9 @@
             },
             "staticIP": {
               "type": "string"
+            },
+            "appInsightsConnectionString": {
+              "type": "securestring"
             }
           },
           "resources": [
@@ -253,7 +260,17 @@
                       "resources": {
                         "cpu": "[json('0.25')]",
                         "memory": "0.5Gi"
-                      }
+                      },
+                      "env": [
+                        {
+                          "name": "ASPNETCORE_ENVIRONMENT",
+                          "value": "Production"
+                        },
+                        {
+                          "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                          "value": "[parameters('appInsightsConnectionString')]"
+                        }
+                      ]
                     }
                   ],
                   "scale": {
