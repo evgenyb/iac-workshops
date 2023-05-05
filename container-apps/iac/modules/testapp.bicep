@@ -5,6 +5,8 @@ param acrName string
 param managedIdentity string
 param privateDnsZoneName string
 param staticIP string
+@secure()
+param appInsightsConnectionString string
 
 resource capp 'Microsoft.App/containerApps@2022-10-01' = {
   name: appName
@@ -48,8 +50,18 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
             cpu: json('0.25')
             memory: '0.5Gi'
           }
+          env: [
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: 'Production'
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: appInsightsConnectionString
+            }
+          ]
         }
-      ]      
+      ]            
       scale: {
         minReplicas: 0
         maxReplicas: 1

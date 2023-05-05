@@ -29,6 +29,11 @@ module acrPullRbac 'modules/acrrbac.bicep' = {
   }
 }
 
+var appInsightsName = '${prefix}-appi'
+resource appInsights 'microsoft.insights/components@2020-02-02' existing = {
+  name: appInsightsName
+} 
+
 module testApp 'modules/testapp.bicep' = {
   name: testAppName
   dependsOn: [
@@ -42,5 +47,6 @@ module testApp 'modules/testapp.bicep' = {
     managedIdentity: mi.outputs.id
     staticIP: privateManagedEnv.properties.staticIp
     privateDnsZoneName: privateManagedEnv.properties.defaultDomain
+    appInsightsConnectionString: appInsights.properties.ConnectionString
   }
 }

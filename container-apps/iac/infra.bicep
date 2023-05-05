@@ -9,6 +9,9 @@ param vnetAddressPrefix string = '10.10'
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
 
+@secure()
+param sqlAdminPassword string
+
 var tenantId = tenant().tenantId
 
 var resourceGroupName = '${prefix}-rg'
@@ -99,4 +102,26 @@ module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
      privateDnsZoneName: privateManagedEnv.outputs.defaultDomain
      linkedVNetId: vnet.outputs.id
    }  
+}
+
+module appInsights 'modules/appInsights.bicep' = {
+  scope: rg
+  name: 'appInsights'
+  params: {
+    location: location
+    prefix: prefix
+    workspaceId: la.outputs.id
+  }
+}
+
+module sql 'modules/sql.bicep' = {
+  scope: rg
+  name: 'sql'
+  params: {
+    location: location
+    prefix: prefix
+    linkedVNetId: vnet.outputs.id
+    privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
+    adminPassword: sqlAdminPassword
+  }
 }

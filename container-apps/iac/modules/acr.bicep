@@ -1,4 +1,3 @@
-@secure()
 param location string
 param acrName string
 param acrPrivateDnsZoneId string
