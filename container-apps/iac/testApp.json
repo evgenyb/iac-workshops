@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "1508216992175764632"
+      "templateHash": "1176175989868981747"
     }
   },
   "parameters": {
@@ -25,7 +25,8 @@
     "uniqueStr": "[uniqueString(subscription().subscriptionId, resourceGroup().id)]",
     "acrName": "[format('iacws4{0}acr', variables('uniqueStr'))]",
     "testAppName": "[format('{0}-test-capp', parameters('prefix'))]",
-    "appInsightsName": "[format('{0}-appi', parameters('prefix'))]"
+    "appInsightsName": "[format('{0}-appi', parameters('prefix'))]",
+    "cosmosdbName": "[format('{0}-cosmosdb', parameters('prefix'))]"
   },
   "resources": [
     {
@@ -178,6 +179,12 @@
           },
           "appInsightsConnectionString": {
             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString]"
+          },
+          "cosmosdbEndpoint": {
+            "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName')), '2022-11-15').documentEndpoint]"
+          },
+          "cosmosdbKey": {
+            "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName')), '2022-11-15').primaryMasterKey]"
           }
         },
         "template": {
@@ -187,7 +194,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "7401963021636097248"
+              "templateHash": "12446002045109739559"
             }
           },
           "parameters": {
@@ -214,6 +221,12 @@
             },
             "appInsightsConnectionString": {
               "type": "securestring"
+            },
+            "cosmosdbKey": {
+              "type": "securestring"
+            },
+            "cosmosdbEndpoint": {
+              "type": "string"
             }
           },
           "resources": [
@@ -255,8 +268,8 @@
                 "template": {
                   "containers": [
                     {
-                      "image": "[format('{0}.azurecr.io/apia:latest', parameters('acrName'))]",
-                      "name": "api-a",
+                      "image": "[format('{0}.azurecr.io/todo:latest', parameters('acrName'))]",
+                      "name": "todo",
                       "resources": {
                         "cpu": "[json('0.25')]",
                         "memory": "0.5Gi"
@@ -269,6 +282,14 @@
                         {
                           "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                           "value": "[parameters('appInsightsConnectionString')]"
+                        },
+                        {
+                          "name": "COSMOS_KEY",
+                          "value": "[parameters('cosmosdbKey')]"
+                        },
+                        {
+                          "name": "COSMOS_ENDPOINT",
+                          "value": "[parameters('cosmosdbEndpoint')]"
                         }
                       ]
                     }

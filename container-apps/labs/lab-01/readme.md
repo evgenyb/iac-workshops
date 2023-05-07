@@ -38,13 +38,13 @@ cd container-apps\src\apps\api-a
 pwd
 
 # build image
-docker build -t apia:latest -f Dockerfile ..
+docker build -t todo:latest -f Dockerfile ..
 
 # Tag the image with the full ACR login server name. 
-docker tag apia:latest "$acrName.azurecr.io/apia:latest"
+docker tag todo:latest "$acrName.azurecr.io/todo:latest"
 
 # Push the image to the ACR instance.
-docker push "$acrName.azurecr.io/apia:latest"
+docker push "$acrName.azurecr.io/todo:latest"
 ```
 
 ### Deploy test app

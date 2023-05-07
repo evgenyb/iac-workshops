@@ -9,9 +9,6 @@ param vnetAddressPrefix string = '10.10'
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
 
-@secure()
-param sqlAdminPassword string
-
 var tenantId = tenant().tenantId
 
 var resourceGroupName = '${prefix}-rg'
@@ -114,14 +111,13 @@ module appInsights 'modules/appInsights.bicep' = {
   }
 }
 
-module sql 'modules/sql.bicep' = {
+module sql 'modules/cosmosdb.bicep' = {
   scope: rg
-  name: 'sql'
+  name: 'cosmosdb'
   params: {
     location: location
     prefix: prefix
     linkedVNetId: vnet.outputs.id
     privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
-    adminPassword: sqlAdminPassword
   }
 }

@@ -34,6 +34,11 @@ resource appInsights 'microsoft.insights/components@2020-02-02' existing = {
   name: appInsightsName
 } 
 
+var cosmosdbName = '${prefix}-cosmosdb'
+resource cosmosdb 'Microsoft.DocumentDB/databaseAccounts@2022-11-15' existing = {
+  name: cosmosdbName
+}
+
 module testApp 'modules/testapp.bicep' = {
   name: testAppName
   dependsOn: [
@@ -48,5 +53,7 @@ module testApp 'modules/testapp.bicep' = {
     staticIP: privateManagedEnv.properties.staticIp
     privateDnsZoneName: privateManagedEnv.properties.defaultDomain
     appInsightsConnectionString: appInsights.properties.ConnectionString
+    cosmosdbEndpoint: cosmosdb.properties.documentEndpoint
+    cosmosdbKey: cosmosdb.listKeys().primaryMasterKey
   }
 }

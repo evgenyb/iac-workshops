@@ -7,6 +7,9 @@ param privateDnsZoneName string
 param staticIP string
 @secure()
 param appInsightsConnectionString string
+@secure()
+param cosmosdbKey string
+param cosmosdbEndpoint string
 
 resource capp 'Microsoft.App/containerApps@2022-10-01' = {
   name: appName
@@ -44,12 +47,12 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
     template: {
       containers: [
         {          
-          image: '${acrName}.azurecr.io/apia:latest'
-          name: 'api-a'
+          image: '${acrName}.azurecr.io/todo:latest'
+          name: 'todo'
           resources: {
             cpu: json('0.25')
             memory: '0.5Gi'
-          }
+          }          
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'
@@ -58,6 +61,14 @@ resource capp 'Microsoft.App/containerApps@2022-10-01' = {
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsightsConnectionString
+            }
+            {
+              name: 'COSMOS_KEY'
+              value: cosmosdbKey
+            }
+            {
+              name: 'COSMOS_ENDPOINT'
+              value: cosmosdbEndpoint
             }
           ]
         }
