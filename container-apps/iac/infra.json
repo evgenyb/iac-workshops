@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "14118428230945477362"
+      "templateHash": "11882021893053544779"
     }
   },
   "parameters": {
@@ -29,9 +29,6 @@
       "metadata": {
         "description": "Lab resources prefix."
       }
-    },
-    "sqlAdminPassword": {
-      "type": "securestring"
     }
   },
   "variables": {
@@ -934,7 +931,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "sql",
+      "name": "cosmosdb",
       "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -953,9 +950,6 @@
           },
           "privateLinkSubnetId": {
             "value": "[format('{0}/subnets/plinks-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
-          },
-          "adminPassword": {
-            "value": "[parameters('sqlAdminPassword')]"
           }
         },
         "template": {
@@ -965,7 +959,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "1095113226838106748"
+              "templateHash": "2322630731677630530"
             }
           },
           "parameters": {
@@ -980,17 +974,13 @@
             },
             "linkedVNetId": {
               "type": "string"
-            },
-            "adminPassword": {
-              "type": "securestring"
             }
           },
           "variables": {
-            "sqlServerName": "[format('{0}-sql', parameters('prefix'))]",
-            "pleName": "[format('{0}-ple', variables('sqlServerName'))]",
-            "groupName": "sqlServer",
-            "privateDnsZoneName": "privatelink.database.windows.net",
-            "databaseName": "[format('{0}-sqldb', parameters('prefix'))]"
+            "cosmosdbName": "[format('{0}-cosmosdb', parameters('prefix'))]",
+            "pleName": "[format('{0}-ple', variables('cosmosdbName'))]",
+            "groupName": "sql",
+            "privateDnsZoneName": "privatelink.documents.azure.com"
           },
           "resources": [
             {
@@ -1015,17 +1005,30 @@
               ]
             },
             {
-              "type": "Microsoft.Sql/servers",
-              "apiVersion": "2022-08-01-preview",
-              "name": "[variables('sqlServerName')]",
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2022-11-15",
+              "name": "[variables('cosmosdbName')]",
               "location": "[parameters('location')]",
+              "kind": "GlobalDocumentDB",
               "properties": {
-                "administratorLogin": "sql-admin",
-                "administratorLoginPassword": "[parameters('adminPassword')]",
-                "version": "12.0",
-                "minimalTlsVersion": "1.2",
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "capabilities": [
+                  {
+                    "name": "EnableServerless"
+                  }
+                ],
+                "minimalTlsVersion": "TLS1_2",
                 "publicNetworkAccess": "Disabled",
-                "restrictOutboundNetworkAccess": "Disabled"
+                "databaseAccountOfferType": "Standard"
               }
             },
             {
@@ -1041,7 +1044,7 @@
                       "groupIds": [
                         "[variables('groupName')]"
                       ],
-                      "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                      "privateLinkServiceId": "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName'))]"
                     }
                   }
                 ],
@@ -1050,7 +1053,7 @@
                 }
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName'))]"
               ]
             },
             {
@@ -1071,31 +1074,18 @@
                 "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName'))]",
                 "[resourceId('Microsoft.Network/privateEndpoints', variables('pleName'))]"
               ]
-            },
-            {
-              "type": "Microsoft.Sql/servers/databases",
-              "apiVersion": "2021-08-01-preview",
-              "name": "[format('{0}/{1}', variables('sqlServerName'), variables('databaseName'))]",
-              "location": "[parameters('location')]",
-              "sku": {
-                "name": "Basic",
-                "tier": "Basic"
-              },
-              "properties": {
-                "collation": "SQL_Latin1_General_CP1_CI_AS",
-                "maxSizeBytes": 1073741824,
-                "zoneRedundant": false,
-                "readScale": "Disabled",
-                "highAvailabilityReplicaCount": 0,
-                "autoPauseDelay": 0,
-                "requestedBackupStorageRedundancy": "Local",
-                "isLedgerOn": false
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
-              ]
             }
-          ]
+          ],
+          "outputs": {
+            "key": {
+              "type": "string",
+              "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName')), '2022-11-15').primaryMasterKey]"
+            },
+            "endpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmosdbName')), '2022-11-15').documentEndpoint]"
+            }
+          }
         }
       },
       "dependsOn": [
