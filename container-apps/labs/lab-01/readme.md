@@ -31,8 +31,8 @@ $acrName = (az acr list -g iac-ws4-rg  --query [0].name -otsv)
 # login into acr
 az acr login -n $acrName
 
-# cd to the api-a folder
-cd container-apps\src\apps\api-a
+# cd to the todo folder
+cd container-apps\src\apps\todo
 
 # make sure that you are at the correct folder
 pwd
@@ -49,7 +49,7 @@ docker push "$acrName.azurecr.io/todo:latest"
 
 ### Deploy test app
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2FtestApp.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2Fapps.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
 ### Test api
 
