@@ -7,7 +7,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10
   name: logAnalyticsName 
 } 
 
-var containerAppsEnvironmentName = '${prefix}-private-menv'
+var containerAppsEnvironmentName = '${prefix}-private-cae'
 
 resource menv 'Microsoft.App/managedEnvironments@2022-10-01' = {
   name: containerAppsEnvironmentName
@@ -24,7 +24,7 @@ resource menv 'Microsoft.App/managedEnvironments@2022-10-01' = {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: logAnalyticsWorkspace.properties.customerId
-        sharedKey: listKeys(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey
+        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }      
     zoneRedundant: false

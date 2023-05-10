@@ -1,6 +1,6 @@
 param prefix string
 param location string
-param bastionSubnetId string
+param subnetId string
 
 var publicIpAddressName = '${prefix}-bastion-pip'
 var bastionHostName = '${prefix}-bastion'
@@ -29,7 +29,7 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-01-01' = {
         name: 'IpConf'
         properties: {
           subnet: {
-            id: bastionSubnetId
+            id: subnetId
           }
           publicIPAddress: {
             id: publicIp.id

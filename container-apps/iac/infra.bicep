@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @description('Resources location')
-param location string = 'westeurope'
+param location string = 'norwayeast'
 
 @description('Two first segments of Virtual Network address prefix. For example, if the address prefix is 10.10.0.0/22, then the value of this parameter should be 10.10')
 param vnetAddressPrefix string = '10.10'
@@ -9,7 +9,8 @@ param vnetAddressPrefix string = '10.10'
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
 
-var tenantId = tenant().tenantId
+@secure()
+param testVMAdminPassword string
 
 var resourceGroupName = '${prefix}-rg'
 
@@ -37,15 +38,7 @@ module vnet 'modules/vnet.bicep' = {
   }
 }
 
-module acrPrivateDnsZone 'modules/acrPrivateDnsZone.bicep' = {
-  name: 'acrPrivateDnsZone'
-  scope: rg
-  params: {
-    linkedVNetId: vnet.outputs.id
-  }  
-}
-
-module privateManagedEnv 'modules/private-menv.bicep' = {
+module privateManagedEnv 'modules/private-cae.bicep' = {
   name: 'privateManagedEnv'
   scope: rg
   params: {
@@ -56,6 +49,26 @@ module privateManagedEnv 'modules/private-menv.bicep' = {
   }
 }
 
+module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
+  scope: rg
+  name: 'privateMenvPrivateDnsZone'
+   params: {
+     privateDnsZoneName: privateManagedEnv.outputs.defaultDomain
+     linkedVNetId: vnet.outputs.id
+   }  
+}
+
+module publiManagedEnv 'modules/public-cae.bicep' = {
+  name: 'publicManagedEnv'
+  scope: rg
+  params: {
+    location: location
+    logAnalyticsName: la.outputs.name
+    prefix: prefix
+  }
+}
+
+
 var uniqueStr = uniqueString(subscription().subscriptionId, rg.id)
 var acrName = 'iacws4${uniqueStr}acr'
 
@@ -65,40 +78,7 @@ module acr 'modules/acr.bicep' = {
   params: {
     acrName: acrName 
     location: location
-    acrPrivateDnsZoneId: acrPrivateDnsZone.outputs.id
-    privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
   }
-}
-
-module vpnGateway 'modules/vpnGateway.bicep' = {
-  scope: rg
-  name: 'vpnGateway'
-  params: {
-    gatewaySubnetId: '${vnet.outputs.id}/subnets/GatewaySubnet'
-    location: location
-    prefix: prefix
-    tenantId: tenantId
-  }
-}
-
-module dnsResolver 'modules/dnsResolver.bicep' = {
-  scope: rg
-  name: 'dnsResolver'
-  params: {
-    location: location
-    prefix: prefix
-    subnetId: '${vnet.outputs.id}/subnets/dnsresolver-inbound-snet'
-    vnetId: vnet.outputs.id
-  }
-}
-
-module privateMenvPrivateDnsZone 'modules/privateMenvPrivateDnsZone.bicep' = {
-  scope: rg
-  name: 'privateMenvPrivateDnsZone'
-   params: {
-     privateDnsZoneName: privateManagedEnv.outputs.defaultDomain
-     linkedVNetId: vnet.outputs.id
-   }  
 }
 
 module appInsights 'modules/appInsights.bicep' = {
@@ -117,7 +97,26 @@ module sql 'modules/cosmosdb.bicep' = {
   params: {
     location: location
     prefix: prefix
-    linkedVNetId: vnet.outputs.id
-    privateLinkSubnetId: '${vnet.outputs.id}/subnets/plinks-snet'
+  }
+}
+
+module bastion 'modules/bastion.bicep' = {
+  scope: rg
+  name: 'bastion'
+  params: {
+    location: location
+    prefix: prefix
+    subnetId: '${vnet.outputs.id}/subnets/AzureBastionSubnet'
+  }
+}
+
+module testVM 'modules/testVM.bicep' = {
+  scope: rg
+  name: 'testVM'
+  params: {
+    location: location
+    vmName: 'testVM'
+    vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
+    adminPassword: testVMAdminPassword
   }
 }
