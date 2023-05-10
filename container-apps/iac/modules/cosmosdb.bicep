@@ -50,7 +50,7 @@ resource cosmosdb 'Microsoft.DocumentDB/databaseAccounts@2022-11-15' = {
         name: 'EnableServerless'
       }
     ]    
-    minimalTlsVersion: 'TLS1_2'
+    minimalTlsVersion: 'Tls12'
     publicNetworkAccess: 'Disabled'
     databaseAccountOfferType: 'Standard'
   }
