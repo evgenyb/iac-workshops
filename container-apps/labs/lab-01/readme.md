@@ -20,7 +20,7 @@ az provider register -n Microsoft.Compute
 
 ### Deploy infrastructure
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
 ### Build and push image to ACR
 
@@ -49,7 +49,7 @@ docker push "$acrName.azurecr.io/todo:latest"
 
 ### Deploy test app
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca%2Fcontainer-apps%2Fiac%2Fapps.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Fapps.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
 ### Test api
 
