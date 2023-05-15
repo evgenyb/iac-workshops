@@ -1,10 +1,31 @@
+# lab-01 - provision lab environment
 
-## Deployment
+As always, we need to provision lab environment before we can start working on the lab tasks. Statistically, we spend at least one hour during the workshop provisioning resources we need during the workshop. Therefore, this time, we do it even more differently than before. That is - you will provision a most time consuming resources prior the workshop day. Here are the reasons:
 
+- It will help us to avoid issues with Azure subscription or regional limits.
+- It will allow us to focus on the workshop tasks during the workshop day.
 
-### Register required resource providers
+If you find any issues with provisioning lab environment under your subscription (hit the limits, resource is not available under your region, template errors etc...), please reach out to me at evgeny.borzenin@gmail.com, via Teams at evgeny@enso.no or describe your issue under [Comments to "Workshop - Working with Azure Container Apps"](https://github.com/evgenyb/iac-workshops/issues/9) issue.
 
-Before we deploy lab resources, we need to register required resource providers. This is a one time operation per subscription.
+I suggest that you try provisioning lab environment at least one week before the workshop day. It will give us time to fix any issues you may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources (to minimize the costs) and re-deploy them again one day before the workshop.
+
+Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](../../iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](../../iac/infra.bicep). It orchestrates deployment of the following resources:
+
+- Private Virtual Network
+- Azure Bastion
+- Azure Private DNS Zone
+- Virtual Machine that we will use for testing
+- Azure Cosmos DB
+- Azure Container Registry
+- Azure Container Apps Managed Environment for public Container Apps
+- Azure Container Apps Managed Environment for private Container Apps
+- Azure Storage Account
+
+You can learn implementation details and code structure, but for efficiency reasons, I also pre-built Bicep template into ARM template and allows you to deploy it right from Azure portal. You can find the master template [here](https://raw.githubusercontent.com/evgenyb/iac-workshops/ws/aca-v1/container-apps/iac/infra.json). 
+
+## Task #1 - register required resource providers
+
+Before we deploy lab resources, we need to make sure that we register all required resource providers. This is a one time operation per subscription.
 
 ```powershell
 az provider register -n Microsoft.ContainerService
@@ -13,14 +34,19 @@ az provider register -n Microsoft.Network
 az provider register -n Microsoft.OperationalInsights
 az provider register -n Microsoft.App
 az provider register -n Microsoft.Storage
-az provider register -n Microsoft.ServiceLinker
 az provider register -n Microsoft.ManagedIdentity
 az provider register -n Microsoft.Compute
+az provider register -n microsoft.insights
+az provider register -n Microsoft.DocumentDB
 ```
 
-### Deploy infrastructure
+## Task #2 - deploy lab environment
+
+You can deploy all resources using the following button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+
+
 
 ### Build and push image to ACR
 
