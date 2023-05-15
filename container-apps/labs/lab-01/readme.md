@@ -58,9 +58,81 @@ It will open Azure portal and ask you to provide the following parameters:
 | Test VM Admin Username | Default value is `iac-admin`  |
 | Test VM Admin Password | Test VM admin user password  |
 
-I recommend you to keep the default values.
+I recommend you to keep the default values. When all parameters are set, click `Review + create` button. 
 
-### Build and push image to ACR
+![01](images/01.png)
+
+If validation is passed, click `Create`.
+
+![01](images/02.png)
+
+The deployment will start and will take around 10 minutes.
+
+![01](images/03.png)
+
+ You can monitor deployment either under Subscription `Deployments` tab, you can go to `iac-ws4-rg` resource group and monitor deployment under `Deployments` tab.
+
+![01](images/04.png)
+
+## Task #3 - connect to the test VM
+
+Under the `iac-ws4-rg` resource group, open your `testVM` Virtual Machine, navigate to  `Settings->Connect` section and select `Bastion` tab and click `Use Bastion`.
+
+![01](images/05.png)
+
+In the new window, enter your test VM admin username and password and click `Connect`. If you used default parameters during provisioning, admin username is `iac-admin`, otherwise use the one you specified and click `Connect`.
+
+![01](images/06.png)
+
+If everything is fine, you will be connected to the test VM. 
+Stay connected to the test VM, we will use it during the next task.
+
+## Task #4 - test private DNS Zone
+
+From your PC, run the following commands
+
+```powershell
+# Get private DNS Zone fqdn
+az network private-dns zone list -g iac-ws4-rg --query [0].name -otsv
+
+# Try to resolve private DNS Zone fqdn
+nslookup <private DNS Zone fqdn from the previous command>
+```
+
+You will get something like
+
+> can't find something-something.norwayeast.azurecontainerapps.io: Non-existent domain
+
+Now, copy private DNS Zone fqdn from the previous command and try to resolve it from the test VM.
+
+```powershell
+# Try to resolve private DNS Zone fqdn
+nslookup <private DNS Zone fqdn from the previous command>
+```
+
+This time you will get the correct response that looks something like
+
+```txt
+nslookup -type=SOA something-something.norwayeast.azurecontainerapps.io
+Server:  UnKnown
+Address:  168.63.129.16
+
+Non-authoritative answer:
+something-something.norwayeast.azurecontainerapps.io
+        primary name server = azureprivatedns.net
+        responsible mail addr = azureprivatedns-host.microsoft.com
+        serial  = 1
+        refresh = 3600 (1 hour)
+        retry   = 300 (5 mins)
+        expire  = 2419200 (28 days)
+        default TTL = 10 (10 secs)
+```
+
+You can disconnect from your test VM.
+
+## Task #5 - build and push application image to ACR
+
+Now let's test that you can build and push images to ACR
 
 ```powershell
 # get your acr name
