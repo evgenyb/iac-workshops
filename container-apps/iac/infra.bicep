@@ -9,6 +9,10 @@ param vnetAddressPrefix string = '10.10'
 @description('Lab resources prefix.')
 param prefix string = 'iac-ws4'
 
+@description('Test VM admin username')
+param testVMAdminUsername string = 'iac-admin'
+
+@description('Test VM admin user password')
 @secure()
 param testVMAdminPassword string
 
@@ -117,6 +121,7 @@ module testVM 'modules/testVM.bicep' = {
     location: location
     vmName: 'testVM'
     vmSubnetId: '${vnet.outputs.id}/subnets/testvm-snet'
+    adminUsername: testVMAdminUsername
     adminPassword: testVMAdminPassword
   }
 }

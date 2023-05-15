@@ -7,7 +7,7 @@ param vmOffer string = 'WindowsServer'
 param vmSku string = '2022-Datacenter'
 param vmVersion string = 'latest'
 param vmStorageAccountType string = 'Premium_LRS'
-param adminUsername string = 'iac-admin'
+param adminUsername string
 @secure()
 param adminPassword string
 

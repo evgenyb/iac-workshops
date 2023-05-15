@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "3379194179637685046"
+      "templateHash": "12874124397434122001"
     }
   },
   "parameters": {
@@ -30,8 +30,18 @@
         "description": "Lab resources prefix."
       }
     },
+    "testVMAdminUsername": {
+      "type": "string",
+      "defaultValue": "iac-admin",
+      "metadata": {
+        "description": "Test VM admin username"
+      }
+    },
     "testVMAdminPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "Test VM admin user password"
+      }
     }
   },
   "variables": {
@@ -822,6 +832,9 @@
           "vmSubnetId": {
             "value": "[format('{0}/subnets/testvm-snet', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupName')), 'Microsoft.Resources/deployments', 'VirtualNetwork'), '2022-09-01').outputs.id.value)]"
           },
+          "adminUsername": {
+            "value": "[parameters('testVMAdminUsername')]"
+          },
           "adminPassword": {
             "value": "[parameters('testVMAdminPassword')]"
           }
@@ -833,7 +846,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "3548105389505206370"
+              "templateHash": "3379976113074117082"
             }
           },
           "parameters": {
@@ -871,8 +884,7 @@
               "defaultValue": "Premium_LRS"
             },
             "adminUsername": {
-              "type": "string",
-              "defaultValue": "iac-admin"
+              "type": "string"
             },
             "adminPassword": {
               "type": "securestring"

@@ -46,7 +46,19 @@ You can deploy all resources using the following button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
+It will open Azure portal and ask you to provide the following parameters:
 
+| Parameter name | Description |
+| --- | --- |
+| Subscription | Your Azure subscription where you want to deploy your lab environment |
+| Region | Your Azure region. Default is `Norway East` |
+| Location | Your Azure region. Default is `norwayeast` |
+| Vnet Address Prefix | The first two octets of the Virtual Network Address prefix. The default value is `10.10`, which will make Virtual Network Address Prefix as `10.10.0.0/22`  |
+| Prefix | All resources will be prefixed with this value. Default value is `iac` |
+| Test VM Admin Username | Default value is `iac-admin`  |
+| Test VM Admin Password | Test VM admin user password  |
+
+I recommend you to keep the default values.
 
 ### Build and push image to ACR
 
