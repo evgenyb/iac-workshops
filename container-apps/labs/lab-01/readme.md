@@ -1,33 +1,42 @@
 # lab-01 - provision lab environment
 
-As always, we need to provision lab environment before we can start working on the lab tasks. Statistically, we spend at least one hour during the workshop provisioning resources we need during the workshop. Therefore, this time, we do it even more differently than before. That is - you will provision a most time consuming resources prior the workshop day. Here are the reasons:
+As always, we need to provision lab environment before we can start working on the lab tasks. Statistically, based on previous workshops experience, we spent at least one hour to provision lab resources.
+This time, we do it differently. That is - you will provision a most time consuming resources prior the workshop day. 
+This way:
 
 - It will help us to avoid issues with Azure subscription or regional limits.
 - It will allow us to focus on the workshop tasks during the workshop day.
 
-If you find any issues with provisioning lab environment under your subscription (hit the limits, resource is not available under your region, template errors etc...), please reach out to me at evgeny.borzenin@gmail.com, via Teams at evgeny@enso.no or describe your issue under [Comments to "Workshop - Working with Azure Container Apps"](https://github.com/evgenyb/iac-workshops/issues/9) issue.
+If you will find any issues with provisioning lab environment under your subscription (hit the limits, resource is not available under your region, template errors etc...), please reach out to me at evgeny.borzenin@gmail.com, via Teams at evgeny@enso.no or describe your issue under [Comments to "Workshop - Working with Azure Container Apps"](https://github.com/evgenyb/iac-workshops/issues/9) issue.
 
-I suggest that you try provisioning lab environment at least one week before the workshop day. It will give us time to fix any issues you may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources (to minimize the costs) and re-deploy them again one day before the workshop.
+I suggest that you try provisioning lab environment at least one week before the workshop day. It will give us time to fix any issues you may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources to minimize the costs, and re-deploy them again one day before the workshop.
 
 Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](../../iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](../../iac/infra.bicep). It orchestrates deployment of the following resources:
 
 - Private Virtual Network
 - Azure Bastion
 - Azure Private DNS Zone
-- Virtual Machine that we will use for testing
-- Azure Cosmos DB
+- Virtual Machine for testing
 - Azure Container Registry
 - Azure Container Apps Managed Environment for public Container Apps
 - Azure Container Apps Managed Environment for private Container Apps
+- Azure Cosmos DB
 - Azure Storage Account
 
-You can learn implementation details and code structure, but for efficiency reasons, I also pre-built Bicep template into ARM template and allows you to deploy it right from Azure portal. You can find the master template [here](https://raw.githubusercontent.com/evgenyb/iac-workshops/ws/aca-v1/container-apps/iac/infra.json). 
+You can learn implementation details and code structure, but for the efficiency reasons, I pre-built Bicep implementation into ARM template and made it possible to deploy it right from Azure portal.
 
 ## Task #1 - register required resource providers
 
 Before we deploy lab resources, we need to make sure that we register all required resource providers. This is a one time operation per subscription.
 
 ```powershell
+# Make sure you are at the correct Subscriptions
+az account show
+
+# If needed, switch to the correct Subscription
+az account set --subscription <your subscription id>
+
+# Register required resource providers
 az provider register -n Microsoft.ContainerService
 az provider register -n Microsoft.ContainerRegistry
 az provider register -n Microsoft.Network
@@ -42,7 +51,7 @@ az provider register -n Microsoft.DocumentDB
 
 ## Task #2 - deploy lab environment
 
-You can deploy all resources using the following button:
+Deploy all resources using the following button:
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
@@ -50,15 +59,16 @@ It will open Azure portal and ask you to provide the following parameters:
 
 | Parameter name | Description |
 | --- | --- |
-| Subscription | Your Azure subscription where you want to deploy your lab environment |
-| Region | Your Azure region. Default is `Norway East` |
+| Subscription | Azure Subscription where you want to deploy your lab environment |
+| Region | Your Azure region. For me the default value is `Norway East` |
 | Location | Your Azure region. Default is `norwayeast` |
 | Vnet Address Prefix | The first two octets of the Virtual Network Address prefix. The default value is `10.10`, which will make Virtual Network Address Prefix as `10.10.0.0/22`  |
 | Prefix | All resources will be prefixed with this value. Default value is `iac` |
 | Test VM Admin Username | Default value is `iac-admin`  |
 | Test VM Admin Password | Test VM admin user password  |
 
-I recommend you to keep the default values. When all parameters are set, click `Review + create` button. 
+I recommend you to keep the default values.
+When all parameters are set, click `Review + create` button.
 
 ![01](images/01.png)
 
@@ -66,7 +76,7 @@ If validation is passed, click `Create`.
 
 ![01](images/02.png)
 
-The deployment will start and will take around 10 minutes.
+The deployment will start and will take approx. 10 minutes.
 
 ![01](images/03.png)
 
@@ -84,7 +94,7 @@ In the new window, enter your test VM admin username and password and click `Con
 
 ![01](images/06.png)
 
-If everything is fine, you will be connected to the test VM. 
+If everything is fine, you will be connected to the test VM.
 Stay connected to the test VM, we will use it during the next task.
 
 ## Task #4 - test private DNS Zone
@@ -99,7 +109,7 @@ az network private-dns zone list -g iac-ws4-rg --query [0].name -otsv
 nslookup <private DNS Zone fqdn from the previous command>
 ```
 
-You will get something like
+You will get response that looks something like
 
 > can't find something-something.norwayeast.azurecontainerapps.io: Non-existent domain
 
@@ -156,19 +166,3 @@ docker tag todo:latest "$acrName.azurecr.io/todo:latest"
 # Push the image to the ACR instance.
 docker push "$acrName.azurecr.io/todo:latest"
 ```
-
-### Deploy test app
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Fapps.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
-
-### Test api
-
-```powershell
-# get private dns zone name
-$dnsZoneName = (az network private-dns zone list -g iac-ws4-rg --query [0].name -otsv)
-
-# test api 
-curl https://iac-ws4-test-capp.$dnsZoneName/health
-```
-
-You should get `ok` response.
