@@ -151,9 +151,6 @@ Now let's test that you can build and push images to ACR
 # Get your acr name
 $acrName = (az acr list -g iac-ws4-rg  --query [0].name -otsv)
 
-# login into acr
-az acr login -n $acrName
-
 # cd to the todo app folder
 cd container-apps\src\apps\todo
 
