@@ -54,7 +54,7 @@ az provider register -n Microsoft.DocumentDB
 
 Deploy all resources by cliking `Deploy to Azure` button below. Do a `CTRL+click` (on Windows and Linux) or `CMD+click` (on MacOS) on the link to open it in new window (tab).
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Fmain%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fmain%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
 It will open Azure portal and ask you to provide the following parameters:
 
