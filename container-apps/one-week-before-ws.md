@@ -11,7 +11,7 @@ If you will find any issues with provisioning lab environment under your subscri
 
 I suggest that you try provisioning lab environment at least one week before the workshop day (23.05.2023). It will give me time to fix any issues we may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources to minimize the costs, and re-deploy them again one day before the workshop.
 
-Infrastructure for Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](../../iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](../../iac/infra.bicep). It orchestrates deployment of the following resources:
+Infrastructure for Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](./iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](./iac/infra.bicep). It orchestrates deployment of the following resources:
 
 - Private Virtual Network
 - Azure Bastion
@@ -54,7 +54,7 @@ az provider register -n Microsoft.DocumentDB
 
 Deploy all resources by cliking `Deploy to Azure` button below. Do a `CTRL+click` (on Windows and Linux) or `CMD+click` (on MacOS) on the link to open it in new window (tab).
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Faca-v1%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fevgenyb%2Fiac-workshops%2Fws%2Fmain%2Fcontainer-apps%2Fiac%2Finfra.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton" /></a>
 
 It will open Azure portal and ask you to provide the following parameters:
 
