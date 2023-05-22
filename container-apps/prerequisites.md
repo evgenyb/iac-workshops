@@ -1,7 +1,5 @@
 # Prerequisites
 
-## Domain name
-
 ## Laptop / PC
 
 You need an laptop. OS installed at this laptop doesn't really matter. The tools we use all work cross platforms. I will be using Windows 11 with PowerShell as my shell.
@@ -84,4 +82,14 @@ winget install Git.Git
 
 ```powershell
 az provider register --namespace Microsoft.Web
+```
+
+## Docker Desktop
+
+Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+or install it with `winget` (Windows only)
+
+```powershell
+winget install -e --id Docker.DockerDesktop
 ```
