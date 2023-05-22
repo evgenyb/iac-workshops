@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using todo.Models;
+    using Models;
 
     public interface ICosmosDbService
     {

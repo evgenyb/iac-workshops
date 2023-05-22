@@ -6,7 +6,8 @@ param location string = resourceGroup().location
 param prefix string = 'iac-ws4'
 
 var uniqueStr = uniqueString(subscription().subscriptionId, resourceGroup().id)
-var acrName = 'iacws4${uniqueStr}acr'
+var prefixWithoutDashes = replace(prefix, '-', '')
+var acrName = '${prefixWithoutDashes}${uniqueStr}acr'
 var privateManagedEnvironmentName = '${prefix}-private-cae'
 
 var appInsightsName = '${prefix}-appi'

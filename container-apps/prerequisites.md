@@ -83,3 +83,13 @@ winget install Git.Git
 ```powershell
 az provider register --namespace Microsoft.Web
 ```
+
+## Docker Desktop
+
+Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+or install it with `winget` (Windows only)
+
+```powershell
+winget install -e --id Docker.DockerDesktop
+```

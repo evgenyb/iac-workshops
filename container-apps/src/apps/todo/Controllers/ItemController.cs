@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using todo.Models;
+    using Models;
 
     public class ItemController : Controller
     {
@@ -62,7 +62,7 @@
                 return BadRequest();
             }
 
-            Item item = await _cosmosDbService.GetItemAsync(id);
+            var item = await _cosmosDbService.GetItemAsync(id);
             if (item == null)
             {
                 return NotFound();
@@ -79,7 +79,7 @@
                 return BadRequest();
             }
 
-            Item item = await _cosmosDbService.GetItemAsync(id);
+            var item = await _cosmosDbService.GetItemAsync(id);
             if (item == null)
             {
                 return NotFound();

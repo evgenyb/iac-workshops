@@ -1,53 +1,50 @@
-﻿namespace todo
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using todo.Models;
-    using Microsoft.Azure.Cosmos;
-    using Microsoft.Azure.Cosmos.Fluent;
-    using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
+using todo.Models;
 
+namespace todo.Services
+{
     public class CosmosDbService : ICosmosDbService
     {
-        private Container _container;
+        private readonly Container _container;
 
         public CosmosDbService(
             CosmosClient dbClient,
             string databaseName,
             string containerName)
         {
-            this._container = dbClient.GetContainer(databaseName, containerName);
+            _container = dbClient.GetContainer(databaseName, containerName);
         }
         
         public async Task AddItemAsync(Item item)
         {
-            await this._container.CreateItemAsync<Item>(item, new PartitionKey(item.Id));
+            await _container.CreateItemAsync(item, new PartitionKey(item.Id));
         }
 
         public async Task DeleteItemAsync(string id)
         {
-            await this._container.DeleteItemAsync<Item>(id, new PartitionKey(id));
+            await _container.DeleteItemAsync<Item>(id, new PartitionKey(id));
         }
 
         public async Task<Item> GetItemAsync(string id)
         {
             try
             {
-                ItemResponse<Item> response = await this._container.ReadItemAsync<Item>(id, new PartitionKey(id));
+                var response = await _container.ReadItemAsync<Item>(id, new PartitionKey(id));
                 return response.Resource;
             }
             catch(CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             { 
                 return null;
             }
-
         }
 
         public async Task<IEnumerable<Item>> GetItemsAsync(string queryString)
         {
-            var query = this._container.GetItemQueryIterator<Item>(new QueryDefinition(queryString));
-            List<Item> results = new List<Item>();
+            var query = _container.GetItemQueryIterator<Item>(new QueryDefinition(queryString));
+            var results = new List<Item>();
             while (query.HasMoreResults)
             {
                 var response = await query.ReadNextAsync();
@@ -60,7 +57,7 @@
 
         public async Task UpdateItemAsync(string id, Item item)
         {
-            await this._container.UpsertItemAsync<Item>(item, new PartitionKey(id));
+            await _container.UpsertItemAsync(item, new PartitionKey(id));
         }
     }
 }

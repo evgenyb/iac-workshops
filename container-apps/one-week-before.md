@@ -1,4 +1,4 @@
-# lab-01 - provision lab environment
+# Dry-run of provisioning of lab environment
 
 As always, we need to provision lab environment before we can start working on the lab tasks. Statistically, based on previous workshops experience, we spent at least one hour to provision lab resources.
 This time, we do it differently. That is - you will provision a most time consuming resources prior the workshop day. 
@@ -7,11 +7,11 @@ This way:
 - It will help us to avoid issues with Azure subscription or regional limits.
 - It will allow us to focus on the workshop tasks during the workshop day.
 
-If you will find any issues with provisioning lab environment under your subscription (hit the limits, resource is not available under your region, template errors etc...), please reach out to me at evgeny.borzenin@gmail.com, via Teams at evgeny@enso.no or describe your issue under [Comments to "Workshop - Working with Azure Container Apps"](https://github.com/evgenyb/iac-workshops/issues/9) issue.
+If you will find any issues with provisioning lab environment under your subscription (hit the limits, resource is not available under your region, template errors etc...), please reach out to me at evgeny.borzenin@gmail.com.
 
-I suggest that you try provisioning lab environment at least one week before the workshop day. It will give us time to fix any issues you may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources to minimize the costs, and re-deploy them again one day before the workshop.
+I suggest that you try provisioning lab environment at least one week before the workshop day (23.05.2023). It will give me time to fix any issues we may have. If provisioning went well and all connectivity tests passed, you can safely delete all resources to minimize the costs, and re-deploy them again one day before the workshop.
 
-Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](../../iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](../../iac/infra.bicep). It orchestrates deployment of the following resources:
+Infrastructure for Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) and code is located under [iac](../../iac/) folder. Most of the resources are implemented as [Bicep modules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules). The master orchestration Bicep file is [infra.bicep](../../iac/infra.bicep). It orchestrates deployment of the following resources:
 
 - Private Virtual Network
 - Azure Bastion
@@ -22,8 +22,9 @@ Lab environment is implemented using [Bicep](https://learn.microsoft.com/en-us/a
 - Azure Container Apps Managed Environment for private Container Apps
 - Azure Cosmos DB
 - Azure Storage Account
+- Azure Key Vault
 
-You can learn implementation details and code structure, but for the efficiency reasons, I pre-built Bicep implementation into ARM template and made it possible to deploy it right from Azure portal.
+You can learn implementation details and code structure, but for the efficiency reasons, I pre-built `Bicep` code into `ARM template` and made it possible to deploy it right from Azure portal.
 
 ## Task #1 - register required resource providers
 
@@ -80,33 +81,35 @@ The deployment will start and will take approx. 10 minutes.
 
 ![01](images/03.png)
 
- You can monitor deployment either under Subscription `Deployments` tab, you can go to `iac-ws4-rg` resource group and monitor deployment under `Deployments` tab.
+ You can monitor deployment either under Subscription `Deployments` tab or you can go to `iac-ws4-rg` resource group and monitor deployment under `Deployments` tab.
 
 ![01](images/04.png)
 
 ## Task #3 - connect to the test VM
 
-Under the `iac-ws4-rg` resource group, open your `testVM` Virtual Machine, navigate to  `Settings->Connect` section and select `Bastion` tab and click `Use Bastion`.
+Let's test that you can connect to the test VM.
+Under the `iac-ws4-rg` resource group, open your `testVM` Virtual Machine, navigate to `Settings -> Connect` section, select `Bastion` tab and click `Use Bastion`.
 
 ![01](images/05.png)
 
-In the new window, enter your test VM admin username and password and click `Connect`. If you used default parameters during provisioning, admin username is `iac-admin`, otherwise use the one you specified and click `Connect`.
+In the new window, enter your test VM admin username and password and click `Connect`. If you used default parameters during provisioning, admin username is `iac-admin`, otherwise use the one you specified.
 
 ![01](images/06.png)
 
 If everything is fine, you will be connected to the test VM.
-Stay connected to the test VM, we will use it during the next task.
+
+Start PowerShell session and stay connected to the test VM, we will use it during the next task.
 
 ## Task #4 - test private DNS Zone
 
 From your PC, run the following commands
 
 ```powershell
-# Get private DNS Zone fqdn
+# Get Container Apps private DNS Zone fqdn
 az network private-dns zone list -g iac-ws4-rg --query [0].name -otsv
 
-# Try to resolve private DNS Zone fqdn
-nslookup <private DNS Zone fqdn from the previous command>
+# Try to resolve fqdn
+nslookup -type=SOA <private DNS Zone fqdn from the previous command>
 ```
 
 You will get response that looks something like
@@ -117,7 +120,7 @@ Now, copy private DNS Zone fqdn from the previous command and try to resolve it 
 
 ```powershell
 # Try to resolve private DNS Zone fqdn
-nslookup <private DNS Zone fqdn from the previous command>
+nslookup -type=SOA <private DNS Zone fqdn from the previous command>
 ```
 
 This time you will get the correct response that looks something like
@@ -138,31 +141,36 @@ something-something.norwayeast.azurecontainerapps.io
         default TTL = 10 (10 secs)
 ```
 
-You can disconnect from your test VM.
+You can now disconnect from your test VM.
 
 ## Task #5 - build and push application image to ACR
 
 Now let's test that you can build and push images to ACR
 
 ```powershell
-# get your acr name
+# Get your acr name
 $acrName = (az acr list -g iac-ws4-rg  --query [0].name -otsv)
 
 # login into acr
 az acr login -n $acrName
 
-# cd to the todo folder
+# cd to the todo app folder
 cd container-apps\src\apps\todo
 
 # make sure that you are at the correct folder
 pwd
 
-# build image
-docker build -t todo:latest -f Dockerfile ..
+# build and publish container image with az acr build command
+az acr build --registry $acrName --image todo:latest --file Dockerfile ..
+```
 
-# Tag the image with the full ACR login server name. 
-docker tag todo:latest "$acrName.azurecr.io/todo:latest"
+## Task #6 - make a printscreen of resources under your `iac-ws4-rg` resource group and send it to me at `evgeny.borzenin@gmail.com`. 
 
-# Push the image to the ACR instance.
-docker push "$acrName.azurecr.io/todo:latest"
+## Task #7 - delete lab infrastructure
+
+Now, when you tested that you can build and push images to ACR, you can delete all lab resources to minimize the costs. We will provision it again prior the workshop day.
+
+```powershell
+# Remove all resources that were created during the workshop
+az group delete --name iac-ws4-rg --yes
 ```

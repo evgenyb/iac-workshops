@@ -74,13 +74,24 @@ module publiManagedEnv 'modules/public-cae.bicep' = {
 
 
 var uniqueStr = uniqueString(subscription().subscriptionId, rg.id)
-var acrName = 'iacws4${uniqueStr}acr'
+var prefixWithoutDashes = replace(prefix, '-', '')
+var acrName = '${prefixWithoutDashes}${uniqueStr}acr'
 
 module acr 'modules/acr.bicep' = {
   name: 'AzureContainerRegistry'
   scope: rg
   params: {
     acrName: acrName 
+    location: location
+  }
+}
+
+var kvName = '${prefix}-${uniqueStr}-kv'
+module kv 'modules/keyvault.bicep' = {
+  scope: rg
+  name: kvName
+  params: {
+    kvName: kvName
     location: location
   }
 }
