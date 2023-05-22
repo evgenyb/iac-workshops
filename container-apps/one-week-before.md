@@ -165,7 +165,13 @@ az acr build --registry $acrName --image todo:latest --file Dockerfile ..
 
 ## Task #7 - delete lab infrastructure
 
-Now, when you tested that you can build and push images to ACR, you can delete all lab resources to minimize the costs. We will provision it again prior the workshop day.
+Now, when you tested that you can:
+- provision all lab resources
+- connect to the test VM
+- resolve private DNS Zone from the test VM
+- build and push images to ACR
+
+you can delete all lab resources to minimize the costs. You will provision all resources again prior the workshop day.
 
 ```powershell
 # Remove all resources that were created during the workshop
